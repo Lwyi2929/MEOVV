@@ -25,15 +25,17 @@ ESA/WorldCover/v200/2021 土地覆蓋分析，使用 smileRandomForest(numberOfT
 
 # 定義研究區域
 roi = ee.Geometry.Rectangle([121.116451, 24.020390, 121.21, 24.09])
-
+my_point = ee.Geometry.Point([121.1617, 24.0495]);
 # 擷取 Sentinel-2 影像
 image = (
     ee.ImageCollection("COPERNICUS/S2_HARMONIZED")
-    .filterBounds(roi)
+    .filterBounds(my_point)
     .filterDate("2021-01-01", "2022-01-01")
     .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
     .sort("CLOUDY_PIXEL_PERCENTAGE")
     .first()
+    .clip(roi)
+    .select('B.*')
 )
 
 # 可視化參數
@@ -63,6 +65,7 @@ left_layer = geemap.ee_tile_layer(image, vis, 'Sentinel-2 false color')
 right_layer = geemap.ee_tile_layer(my_lc, classVis, "ESA WorldCover")
 my_Map.split_map(left_layer, right_layer)
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
+my_Map.centerObject(roi, 12)
 
 # 顯示地圖
 my_Map.to_streamlit(height=600)
