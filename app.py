@@ -62,6 +62,6 @@ with st.expander("展示gif檔"):
     st.image("pucallpa.gif")
 
 with st.expander("播放真色影像mp4檔"):
-    video_file = open("pucallpa.mp4", "rb")  # "rb"指的是讀取二進位檔案（圖片、影片）
+    video_file = open("qingjing_true (1).mp4", "rb")  # "rb"指的是讀取二進位檔案（圖片、影片）
     video_bytes = video_file.read()
     st.video(video_bytes)
