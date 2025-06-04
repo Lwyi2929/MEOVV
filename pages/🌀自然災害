@@ -19,7 +19,7 @@ ee.Initialize(credentials)
 st.set_page_config(layout="wide")
 st.title("🌀自然災害影響")
 st.write("""
-Harmonized Sentinel-2 卡努颱風前(2023-06-01~2023-07-31):卡努颱風後(2023-08-01~2023-09-30)
+Harmonized Sentinel-2 卡努颱風前(2023/06/01-2023/07/31):卡努颱風後(2023/08/01-2023/09/30)
 """)
 my_Map  = geemap.Map()
 roi = my_Map.user_roi
