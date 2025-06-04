@@ -10,3 +10,22 @@ st.write("""
 """)
 # Display the image
 st.image("tourists.png", caption="Annual tourist visits to Qingjing Farm",use_container_width=True)
+
+
+
+import streamlit as st
+import leafmap.foliumap as leafmap
+
+st.set_page_config(layout="wide")
+
+markdown = """
+A Streamlit map app exercise
+<https://geo3w.ncue.edu.tw/?Lang=zh-tw>
+"""
+
+st.sidebar.title("About")
+st.sidebar.info(markdown)
+logo = "https://i.imgur.com/UbOXYAU.png"
+st.sidebar.image(logo)
+
+st.title("合法民宿點位")
