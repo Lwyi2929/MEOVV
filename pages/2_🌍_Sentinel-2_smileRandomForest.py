@@ -169,24 +169,23 @@ my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 my_Map.to_streamlit(height=600)
 
 #環境變遷
-#import matplotlib.pyplot as plt
-import matplotlib as mpl
 import streamlit as st
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 import pandas as pd
 import numpy as np
 
-# 嘗試使用常見中文字體（依作業系統選擇）
-mpl.rcParams['font.sans-serif'] = ['Noto Sans CJK TC', 'Microsoft JhengHei', 'PingFang TC', 'Arial Unicode MS']
-mpl.rcParams['axes.unicode_minus'] = False  # 避免負號顯示成亂碼
+# 設定中文字型（系統內建的幾種）
+mpl.rcParams['font.sans-serif'] = ['Noto Sans CJK TC', 'Microsoft JhengHei', 'PingFang TC']
+mpl.rcParams['axes.unicode_minus'] = False  # 正確顯示負號
 
-# Streamlit 顯示中文標題
 st.title("環境變遷分析")
 st.markdown("""
 Harmonized Sentinel-2 MSI: MultiSpectral Instrument，  
 ESA/WorldCover/v200/2021 土地覆蓋分析，使用 smileRandomForest(numberOfTrees=100)
 """)
 
-# 數據準備
+# 建立資料
 data = {
     'Category': ['10 樹林', '30 草地', '40 農地', '50 建築', '80 水域'],
     '2016': [60.22, 11.43, 0.85, 0.66, 0.19],
@@ -195,36 +194,35 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# 繪圖
+# 畫圖
 x = np.arange(len(df['Category']))
 width = 0.25
-fig, ax = plt.subplots(figsize=(12, 6))
+fig, ax = plt.subplots(figsize=(10, 6))
 
 bars1 = ax.bar(x - width, df['2016'], width, label='2016', color='#1f77b4')
 bars2 = ax.bar(x, df['2018'], width, label='2018', color='#ff7f0e')
 bars3 = ax.bar(x + width, df['2024'], width, label='2024', color='#2ca02c')
 
-ax.set_ylabel('面積（平方公里）', fontsize=12)
-ax.set_xlabel('土地使用分類', fontsize=12)
-ax.set_title('清境農場土地使用分類面積', fontsize=14)
+ax.set_ylabel('面積（平方公里）')
+ax.set_xlabel('土地使用分類')
+ax.set_title('清境農場土地使用分類面積')
 ax.set_xticks(x)
 ax.set_xticklabels(df['Category'])
 ax.legend()
 
-# 標註數值
+# 加上數值標籤
 def add_labels(bars):
     for bar in bars:
         height = bar.get_height()
-        ax.annotate(f'{height:.2f}',
-                    xy=(bar.get_x() + bar.get_width()/2, height),
-                    xytext=(0, 3),
-                    textcoords="offset points",
+        ax.annotate(f'{height:.2f}', 
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3), textcoords='offset points',
                     ha='center', va='bottom', fontsize=9)
 
 add_labels(bars1)
 add_labels(bars2)
 add_labels(bars3)
 
-# 顯示圖表
 st.pyplot(fig)
+
 
