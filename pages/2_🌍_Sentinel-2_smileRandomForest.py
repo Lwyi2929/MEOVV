@@ -167,3 +167,9 @@ my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
 my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 my_Map.to_streamlit(height=600)
+
+st.title("環境變遷分析")
+st.write("""
+Harmonized Sentinel-2 MSI: MultiSpectral Instrument，
+ESA/WorldCover/v200/2021 土地覆蓋分析，使用 smileRandomForest(numberOfTrees=100)
+""")
