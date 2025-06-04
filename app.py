@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import date
 
-st.set_page_config(layout="wide", page_title="清境農場周邊土地利用分類與環境變遷分析")
+st.set_page_config(layout="wide", page_title="🐑清境農場周邊土地利用分類與環境變遷分析")
 
 st.title("清境農場周邊土地利用分類與環境變遷分析")
 
