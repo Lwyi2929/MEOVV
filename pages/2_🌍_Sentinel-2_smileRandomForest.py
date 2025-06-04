@@ -183,9 +183,6 @@ Harmonized Sentinel-2 MSI: MultiSpectral Instrument，
 ESA/WorldCover/v200/2021 土地覆蓋分析，使用 smileRandomForest(numberOfTrees=100)
 """)
 
-# 載入字體（需提前下載字體檔）
-fontManager.addfont('TaipeiSansTCBeta-Regular.ttf')
-mpl.rc('font', family='Taipei Sans TC Beta')
 
 # 建立資料
 data = {
