@@ -108,35 +108,4 @@ my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 
 
-import os
-import zipfile
-import geopandas as gpd
-import streamlit as st
-# 解壓縮 hotel_love.zip
-zip_path = "hotel_love.zip"
-extract_path = "shp_temp"
-
-with zipfile.ZipFile(zip_path, "r") as zip_ref:
-    zip_ref.extractall(extract_path)
-
-# 尋找 Shapefile 路徑
-shp_path = next(
-    (os.path.join(extract_path, f) for f in os.listdir(extract_path) if f.endswith(".shp")),
-    None
-)
-
-if shp_path:
-    try:
-        gdf = gpd.read_file(shp_path)
-
-        # 確保使用 WGS84 座標系統
-        if gdf.crs != "EPSG:4326":
-            gdf = gdf.to_crs("EPSG:4326")
-
-        # 加入民宿點位圖層
-        my_Map.add_gdf(gdf, layer_name="合法民宿")
-
-
-
-
 my_Map.to_streamlit(height=600)
