@@ -3,7 +3,7 @@ from datetime import date
 
 st.set_page_config(layout="wide", page_title="清境農場周邊土地利用分類與環境變遷分析")
 
-st.title("應用程式主頁")
+st.title("清境農場周邊土地利用分類與環境變遷分析")
 
 st.markdown(
     """
@@ -12,14 +12,13 @@ st.markdown(
     """
 )
 
-st.header("Instructions")
+st.header("關於清境農場")
 
 markdown = """
-1. You can use it as a template for your own project.
-2. Customize the sidebar by changing the sidebar text and logo in each Python file.
-3. Find your favorite emoji from https://emojipedia.org.
-4. Add a new app to the `pages/` directory with an emoji in the file name, e.g., `1_🚀_Chart.py`.
-
+1. 1961年  安置滇緬戰區撤台的軍隊與榮民設立清境農場
+2. 1980年 自給自足農場轉型為觀光農場。 
+3. 1993年 釋出國有農地  使得外地者陸續進駐清境經營民宿  .
+4. 造成山坡地過度開發
 """
 
 st.markdown(markdown)
