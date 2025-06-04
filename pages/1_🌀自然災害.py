@@ -2,13 +2,6 @@ import streamlit as st
 import ee
 from google.oauth2 import service_account
 import geemap.foliumap as geemap
-import zipfile
-import os
-import geopandas as gpd
-import tempfile
-import streamlit as st
-import folium
-from streamlit_folium import st_folium
 
 # 從 Streamlit Secrets 讀取 GEE 服務帳戶金鑰 JSON
 service_account_info = st.secrets["GEE_SERVICE_ACCOUNT"]
@@ -25,48 +18,6 @@ ee.Initialize(credentials)
 # Streamlit 設定
 st.set_page_config(layout="wide")
 st.title("🌀自然災害影響")
-
-st.header("📂 崩塌區圖層顯示")
-
-# 指定你上傳檔案的位置
-uploaded_zip_path = "/mnt/data/110崩塌.zip"
-
-# 解壓縮並讀取 Shapefile
-with tempfile.TemporaryDirectory() as tmpdir:
-    with zipfile.ZipFile(uploaded_zip_path, "r") as zip_ref:
-        zip_ref.extractall(tmpdir)
-
-    # 尋找 .shp 檔
-    shp_files = [f for f in os.listdir(tmpdir) if f.endswith(".shp")]
-    if shp_files:
-        shp_path = os.path.join(tmpdir, shp_files[0])
-        gdf = gpd.read_file(shp_path)
-
-        # 顯示資料表
-        st.success(f"✅ 成功載入 {shp_files[0]}")
-        st.dataframe(gdf.head())
-
-        # 顯示在 Folium 地圖
-        m = folium.Map(location=[gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()], zoom_start=13)
-        folium.GeoJson(gdf, name="崩塌區").add_to(m)
-        folium.LayerControl().add_to(m)
-        st_folium(m, height=500)
-    else:
-        st.error("❌ ZIP 裡沒有找到 .shp 檔案。請確認 ZIP 包含 .shp, .shx, .dbf 等檔案。")
-
-
-# 顯示標題
-st.title("崩塌地圖展示 (collapse_110.shp)")
-# 載入資料
-in_shp = 'collapse_110.shp'  # ⚠️ 放在同一資料夾或換成你的路徑
-gdf = gpd.read_file(in_shp)
-# 建立 folium 地圖
-center = [gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()]
-m = folium.Map(location=center, zoom_start=13)
-# 加上 GeoData
-folium.GeoJson(gdf).add_to(m)
-# 顯示在 Streamlit 中
-st_data = st_folium(m, width=700, height=500)
 
 st.write("""
 Harmonized Sentinel-2 
