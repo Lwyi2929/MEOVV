@@ -170,59 +170,54 @@ my_Map.to_streamlit(height=600)
 
 #環境變遷
 import streamlit as st
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import pandas as pd
 import numpy as np
 
-# 設定中文字型（系統內建的幾種）
-mpl.rcParams['font.sans-serif'] = ['Noto Sans CJK TC', 'Microsoft JhengHei', 'PingFang TC']
-mpl.rcParams['axes.unicode_minus'] = False  # 正確顯示負號
+# 中文顯示設定（自動適配常見中文字型）
+mpl.rcParams['font.family'] = ['Microsoft JhengHei', 'Noto Sans CJK TC', 'PingFang TC', 'Arial Unicode MS']
+mpl.rcParams['axes.unicode_minus'] = False
 
-st.title("環境變遷分析")
+# Streamlit 介面
+st.title("🌏 環境變遷分析")
 st.markdown("""
-Harmonized Sentinel-2 MSI: MultiSpectral Instrument，  
-ESA/WorldCover/v200/2021 土地覆蓋分析，使用 smileRandomForest(numberOfTrees=100)
+**資料來源**：Harmonized Sentinel-2 MSI、ESA/WorldCover/v200/2021  
+**方法**：使用 `smileRandomForest(numberOfTrees=100)` 分類土地利用  
+**地區**：清境農場  
 """)
 
-# 建立資料
-data = {
-    'Category': ['10 樹林', '30 草地', '40 農地', '50 建築', '80 水域'],
-    '2016': [60.22, 11.43, 0.85, 0.66, 0.19],
-    '2018': [58.88, 12.86, 0.91, 0.53, 0.18],
-    '2024': [51.40, 16.12, 3.93, 1.55, 0.35]
-}
-df = pd.DataFrame(data)
+# 數據準備
+categories = ['10 樹林', '30 草地', '40 農地', '50 建築', '80 水域']
+years = ['2016', '2018', '2024']
+values = [
+    [60.22, 11.43, 0.85, 0.66, 0.19],
+    [58.88, 12.86, 0.91, 0.53, 0.18],
+    [51.40, 16.12, 3.93, 1.55, 0.35]
+]
+df = pd.DataFrame(values, columns=categories, index=years).T  # 轉置方便繪圖
 
 # 畫圖
-x = np.arange(len(df['Category']))
-width = 0.25
 fig, ax = plt.subplots(figsize=(10, 6))
+bar_width = 0.25
+x = np.arange(len(df.index))
 
-bars1 = ax.bar(x - width, df['2016'], width, label='2016', color='#1f77b4')
-bars2 = ax.bar(x, df['2018'], width, label='2018', color='#ff7f0e')
-bars3 = ax.bar(x + width, df['2024'], width, label='2024', color='#2ca02c')
+for i, year in enumerate(df.columns):
+    ax.bar(x + i * bar_width, df[year], width=bar_width, label=year)
 
-ax.set_ylabel('面積（平方公里）')
-ax.set_xlabel('土地使用分類')
-ax.set_title('清境農場土地使用分類面積')
-ax.set_xticks(x)
-ax.set_xticklabels(df['Category'])
-ax.legend()
+ax.set_xticks(x + bar_width)
+ax.set_xticklabels(df.index)
+ax.set_xlabel("土地分類")
+ax.set_ylabel("面積（平方公里）")
+ax.set_title("清境農場各年份土地使用分類")
+ax.legend(title="年份")
 
-# 加上數值標籤
-def add_labels(bars):
-    for bar in bars:
-        height = bar.get_height()
-        ax.annotate(f'{height:.2f}', 
-                    xy=(bar.get_x() + bar.get_width() / 2, height),
-                    xytext=(0, 3), textcoords='offset points',
-                    ha='center', va='bottom', fontsize=9)
+# 數值標籤
+for i, year in enumerate(df.columns):
+    for xi, yi in zip(x, df[year]):
+        ax.text(xi + i * bar_width, yi + 0.5, f"{yi:.2f}", ha='center', va='bottom', fontsize=8)
 
-add_labels(bars1)
-add_labels(bars2)
-add_labels(bars3)
-
+plt.tight_layout()
 st.pyplot(fig)
 
 
