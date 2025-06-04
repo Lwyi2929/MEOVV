@@ -69,18 +69,16 @@ Harmonized Sentinel-2
 """)
 
 my_Map2  = geemap.Map()
-roi = my_Map2.user_roi
+roi = my_Map.user_roi
 if roi is None:
     roi = ee.Geometry.Rectangle([ 121.116451, 24.020390, 121.21, 24.09] )#設定研究區域
     my_Map.addLayer(roi)
     my_Map.centerObject(roi, 10)
-my_poin2t = ee.Geometry.Point([121.1617, 24.0495]);
-my_Map2 .centerObject(roi, 12)
-my_point2 = ee.Geometry.Point([121.1617, 24.0495]);
-my_Map2 .centerObject(roi, 12)
+my_point = ee.Geometry.Point([121.1617, 24.0495]);
+my_Map .centerObject(roi, 12)
 
 # 取得 2024 年影像並進行處理
-my_newimg_Bef2 = (
+my_newimg_Bef = (
     ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
     .filterBounds(my_point)
     .filterDate('2024-09-01', '2024-10-29')
@@ -89,7 +87,7 @@ my_newimg_Bef2 = (
     .clip(roi)
     .select('B.*')
 )
-my_newimg_Aft2 = (
+my_newimg_Aft = (
     ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
     .filterBounds(my_point)
     .filterDate('2024-10-30', '2024-12-30')
@@ -100,12 +98,11 @@ my_newimg_Aft2 = (
 )
 
 # 影像顯示參數
-vis_params2 = {'min': 100, 'max': 3500, 'bands': ['B11', 'B8', 'B3']}
-my_Map2 = geemap.Map()
-my_Map2.centerObject(my_newimg_Bef.geometry(), 13)
-left_layer = geemap.ee_tile_layer(my_newimg_Bef2,vis_params2, '康芮颱風前')
-right_layer = geemap.ee_tile_layer(my_newimg_Aft2,vis_params2, '康芮颱風後')
-my_Map2.split_map(left_layer, right_layer)
-my_Map2
+vis_params = {'min': 100, 'max': 3500, 'bands': ['B11', 'B8', 'B3']}
+my_Map = geemap.Map()
+my_Map.centerObject(my_newimg_Bef.geometry(), 13)
+left_layer = geemap.ee_tile_layer(my_newimg_Bef,vis_params, '康芮颱風前')
+right_layer = geemap.ee_tile_layer(my_newimg_Aft,vis_params, '康芮颱風後')
+my_Map.split_map(left_layer, right_layer)
 # 顯示地圖
-my_Map2.to_streamlit(height=600)
+my_Map.to_streamlit(height=600)
