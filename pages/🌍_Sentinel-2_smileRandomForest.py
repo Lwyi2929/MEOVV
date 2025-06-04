@@ -39,7 +39,7 @@ image = (
 )
 
 # 可視化參數
-vis = {'min': 100, 'max': 3500, 'bands': ['B11', 'B8', 'B3']}
+vis_params = {'min': 100, 'max': 3500, 'bands': ['B11', 'B8', 'B3']}
 
 # 讀取 ESA WorldCover 2021 土地覆蓋圖層
 my_lc = ee.Image('ESA/WorldCover/v200/2021').clip(roi)
@@ -61,7 +61,7 @@ classVis = {
 
 # 建立地圖並添加圖層
 my_Map = geemap.Map()
-left_layer = geemap.ee_tile_layer(image, vis, 'Sentinel-2 false color')
+left_layer = geemap.ee_tile_layer(image, vis_params, 'Sentinel-2 false color')
 right_layer = geemap.ee_tile_layer(my_lc, classVis, "ESA WorldCover")
 my_Map.split_map(left_layer, right_layer)
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
@@ -108,13 +108,13 @@ my_newimg_2016 = (
     .clip(roi)
     .select('B.*')
 )
-# 分類影像
+# 分類
 my_newimgClassified2016 = my_newimg_2016.classify(my_trainedClassifier)
 
+# 顯示地圖
 my_Map = geemap.Map()
-my_Map .centerObject(my_newimg_2016, 12)
+my_Map.centerObject(my_newimg_2016, 12)
 my_Map.addLayer(my_newimg_2016, vis_params, "Sentinel-2")
 my_Map.addLayer(my_newimgClassified2016, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
-# 顯示地圖
 my_Map.to_streamlit(height=600)
