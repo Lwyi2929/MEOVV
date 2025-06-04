@@ -54,14 +54,14 @@ st.title("利用擴充器示範")
 markdown = """
 2016年~2024年的衛星影像時序動畫
 """
-
 st.markdown(markdown)
 
+with st.expander("播放真色影像mp4檔(landsat)"):
+    video_file = open("qingjing_true (1).mp4", "rb")  # "rb"指的是讀取二進位檔案（圖片、影片）
+    video_bytes = video_file.read()
+    st.video(video_bytes)
 
-with st.expander("展示gif檔"):
-    st.image("pucallpa.gif")
-
-with st.expander("播放真色影像mp4檔"):
+with st.expander("播放假色影像mp4檔(sentinel2) bands=['B8', 'B4', 'B3']"):
     video_file = open("qingjing_true (1).mp4", "rb")  # "rb"指的是讀取二進位檔案（圖片、影片）
     video_bytes = video_file.read()
     st.video(video_bytes)
