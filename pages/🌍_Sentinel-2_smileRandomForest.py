@@ -17,7 +17,7 @@ ee.Initialize(credentials)
 
 # Streamlit 設定
 st.set_page_config(layout="wide")
-st.title("🌍 土地利用分析")
+st.title("🌍 土地利用分析_監督式分類")
 st.write("""
 Harmonized Sentinel-2 MSI: MultiSpectral Instrument，
 ESA/WorldCover/v200/2021 土地覆蓋分析，使用 smileRandomForest(numberOfTrees=100)
@@ -77,7 +77,7 @@ st.subheader("""
 """)
 
 st.write("""
-2016年土地利用分析
+2016年土地利用分析_禁限建令施行後
 """)
 
 #隨機採樣
@@ -117,5 +117,54 @@ my_Map = geemap.Map()
 my_Map.centerObject(my_newimg_2016, 12)
 my_Map.addLayer(my_newimg_2016, vis_params, "Sentinel-2")
 my_Map.addLayer(my_newimgClassified2016, classVis, 'Classified_smileRandomForest')
+my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
+my_Map.to_streamlit(height=600)
+
+
+st.write("""
+2018年土地利用分析_禁限建令解禁
+""")
+# 取得 2018 年影像並進行處理
+my_newimg_2018 = (
+    ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
+    .filterBounds(my_point)
+    .filterDate('2018-01-01', '2018-12-31')
+    .sort('CLOUDY_PIXEL_PERCENTAGE')
+    .first()
+    .clip(roi)
+    .select('B.*')
+)
+# 分類
+my_newimgClassified2018 = my_newimg_2018.classify(my_trainedClassifier)
+
+# 顯示地圖
+my_Map = geemap.Map()
+my_Map.centerObject(my_newimg_2018, 12)
+my_Map.addLayer(my_newimg_2018, vis_params, "Sentinel-2")
+my_Map.addLayer(my_newimgClassified2018, classVis, 'Classified_smileRandomForest')
+my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
+my_Map.to_streamlit(height=600)
+
+st.write("""
+2024年土地利用分析_禁限建令解禁後多年
+""")
+# 取得 2024 年影像並進行處理
+my_newimg_2024 = (
+    ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
+    .filterBounds(my_point)
+    .filterDate('2024-01-01', '2024-12-31')
+    .sort('CLOUDY_PIXEL_PERCENTAGE')
+    .first()
+    .clip(roi)
+    .select('B.*')
+)
+# 分類
+my_newimgClassified2024 = my_newimg_2024.classify(my_trainedClassifier)
+
+# 顯示地圖
+my_Map = geemap.Map()
+my_Map.centerObject(my_newimg_2024, 12)
+my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
+my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 my_Map.to_streamlit(height=600)
