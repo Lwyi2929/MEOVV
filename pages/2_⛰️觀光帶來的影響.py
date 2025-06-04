@@ -1,5 +1,5 @@
 import streamlit as st
-import leafmap.foliumap as leafmap
+#import leafmap.foliumap as leafmap
 
 st.title("⛰️ 清境農場歷年遊憩據點人次統計")
 st.subheader("""
