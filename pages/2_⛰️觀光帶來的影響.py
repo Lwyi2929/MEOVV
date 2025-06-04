@@ -109,9 +109,9 @@ my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 
 
 # 上傳 hotel_love.zip 並顯示民宿點位
-uploaded_file = st.file_uploader("📂 上傳 hotel_love.zip (包含 .shp/.dbf/.shx/.prj)", type="zip")
+#uploaded_file = st.file_uploader("hotel_love.zip (包含 .shp/.dbf/.shx/.prj)", type="zip")
 
-if uploaded_file is not None:
+#if uploaded_file is not None:
     with zipfile.ZipFile(uploaded_file, "r") as zip_ref:
         zip_ref.extractall("shp_temp")
     shp_files = [f for f in os.listdir("shp_temp") if f.endswith(".shp")]
@@ -124,7 +124,7 @@ if uploaded_file is not None:
             gdf = gdf.to_crs("EPSG:4326")
 
         # 加到地圖
-        my_Map.add_gdf(gdf, layer_name="Hotel Love 民宿")
+        my_Map.add_gdf(gdf, layer_name="Renai_Hotel")
 
 
 
