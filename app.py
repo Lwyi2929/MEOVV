@@ -51,6 +51,12 @@ st.success(f"目前選擇的日期區間為：{start_date} 到 {end_date}")
 
 
 st.title("利用擴充器示範")
+markdown = """
+2016年~2024年的衛星影像時序動畫
+"""
+
+st.markdown(markdown)
+
 
 with st.expander("展示gif檔"):
     st.image("pucallpa.gif")
