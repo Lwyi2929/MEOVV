@@ -172,22 +172,28 @@ my_Map.to_streamlit(height=600)
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib as mpl
+import matplotlib.font_manager as font_manager
 import numpy as np
+import os
 
-# 中文顯示設定（自動適配常見中文字型）
-mpl.rcParams['font.family'] = ['Microsoft JhengHei', 'Noto Sans CJK TC', 'PingFang TC', 'Arial Unicode MS']
-mpl.rcParams['axes.unicode_minus'] = False
+# 下載 Noto Sans TC（適用 Linux/macOS/Windows）
+font_url = "https://noto-website-2.storage.googleapis.com/pkgs/NotoSansTC-Regular.otf"
+font_path = "NotoSansTC-Regular.otf"
 
-# Streamlit 介面
+if not os.path.exists(font_path):
+    import urllib.request
+    urllib.request.urlretrieve(font_url, font_path)
+
+# 註冊字型
+font_manager.fontManager.addfont(font_path)
+plt.rcParams['font.family'] = 'Noto Sans TC'
+plt.rcParams['axes.unicode_minus'] = False
+
+# 畫面標題
 st.title("🌏 環境變遷分析")
-st.markdown("""
-**資料來源**：Harmonized Sentinel-2 MSI、ESA/WorldCover/v200/2021  
-**方法**：使用 `smileRandomForest(numberOfTrees=100)` 分類土地利用  
-**地區**：清境農場  
-""")
 
-# 數據準備
+
+# 數據
 categories = ['10 樹林', '30 草地', '40 農地', '50 建築', '80 水域']
 years = ['2016', '2018', '2024']
 values = [
@@ -195,7 +201,7 @@ values = [
     [58.88, 12.86, 0.91, 0.53, 0.18],
     [51.40, 16.12, 3.93, 1.55, 0.35]
 ]
-df = pd.DataFrame(values, columns=categories, index=years).T  # 轉置方便繪圖
+df = pd.DataFrame(values, columns=categories, index=years).T
 
 # 畫圖
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -215,7 +221,7 @@ ax.legend(title="年份")
 # 數值標籤
 for i, year in enumerate(df.columns):
     for xi, yi in zip(x, df[year]):
-        ax.text(xi + i * bar_width, yi + 0.5, f"{yi:.2f}", ha='center', va='bottom', fontsize=8)
+        ax.text(xi + i * bar_width, yi + 0.5, f"{yi:.2f}", ha='center', va='bottom', fontsize=9)
 
 plt.tight_layout()
 st.pyplot(fig)
