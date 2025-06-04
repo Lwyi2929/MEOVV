@@ -81,6 +81,7 @@ st.write("""
 """)
 
 #隨機採樣
+label = 'lc' 
 sample = image.addBands(my_lc).stratifiedSample(**{
         'numPoints': 10000,
         'classBand': label,
