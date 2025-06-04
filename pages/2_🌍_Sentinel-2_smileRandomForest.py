@@ -176,52 +176,62 @@ import matplotlib.font_manager as font_manager
 import numpy as np
 import os
 
-# 下載 Noto Sans TC（適用 Linux/macOS/Windows）
-font_url = "https://noto-website-2.storage.googleapis.com/pkgs/NotoSansTC-Regular.otf"
+# 安全的下載位置（GitHub 來源）
+font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/TraditionalChinese/NotoSansTC-Regular.otf"
 font_path = "NotoSansTC-Regular.otf"
 
 if not os.path.exists(font_path):
-    import urllib.request
-    urllib.request.urlretrieve(font_url, font_path)
+    import requests
+    r = requests.get(font_url)
+    with open(font_path, 'wb') as f:
+        f.write(r.content)
 
 # 註冊字型
 font_manager.fontManager.addfont(font_path)
 plt.rcParams['font.family'] = 'Noto Sans TC'
 plt.rcParams['axes.unicode_minus'] = False
 
-# 畫面標題
-st.title("🌏 環境變遷分析")
+# 顯示標題
+st.title("🌍 環境變遷分析：土地使用變化")
 
-
-# 數據
-categories = ['10 樹林', '30 草地', '40 農地', '50 建築', '80 水域']
-years = ['2016', '2018', '2024']
-values = [
-    [60.22, 11.43, 0.85, 0.66, 0.19],
-    [58.88, 12.86, 0.91, 0.53, 0.18],
-    [51.40, 16.12, 3.93, 1.55, 0.35]
-]
-df = pd.DataFrame(values, columns=categories, index=years).T
+# 建立資料
+data = {
+    '類別': ['10 樹林', '30 草地', '40 農地', '50 建築', '80 水域'],
+    '2016': [60.22, 11.43, 0.85, 0.66, 0.19],
+    '2018': [58.88, 12.86, 0.91, 0.53, 0.18],
+    '2024': [51.40, 16.12, 3.93, 1.55, 0.35]
+}
+df = pd.DataFrame(data)
 
 # 畫圖
 fig, ax = plt.subplots(figsize=(10, 6))
-bar_width = 0.25
-x = np.arange(len(df.index))
+x = np.arange(len(df['類別']))
+width = 0.25
 
-for i, year in enumerate(df.columns):
-    ax.bar(x + i * bar_width, df[year], width=bar_width, label=year)
+bars1 = ax.bar(x - width, df['2016'], width, label='2016')
+bars2 = ax.bar(x, df['2018'], width, label='2018')
+bars3 = ax.bar(x + width, df['2024'], width, label='2024')
 
-ax.set_xticks(x + bar_width)
-ax.set_xticklabels(df.index)
 ax.set_xlabel("土地分類")
 ax.set_ylabel("面積（平方公里）")
 ax.set_title("清境農場各年份土地使用分類")
+ax.set_xticks(x)
+ax.set_xticklabels(df['類別'])
 ax.legend(title="年份")
 
-# 數值標籤
-for i, year in enumerate(df.columns):
-    for xi, yi in zip(x, df[year]):
-        ax.text(xi + i * bar_width, yi + 0.5, f"{yi:.2f}", ha='center', va='bottom', fontsize=9)
+# 數值標註
+def add_labels(bars):
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate(f'{height:.2f}',
+                    xy=(bar.get_x() + bar.get_width()/2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+
+add_labels(bars1)
+add_labels(bars2)
+add_labels(bars3)
 
 plt.tight_layout()
 st.pyplot(fig)
