@@ -168,8 +168,66 @@ my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 my_Map.to_streamlit(height=600)
 
+#環境變遷
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib as mpl
+from matplotlib.font_manager import fontManager
+
+# 設定標題與說明
 st.title("環境變遷分析")
-st.write("""
-Harmonized Sentinel-2 MSI: MultiSpectral Instrument，
+st.markdown("""
+Harmonized Sentinel-2 MSI: MultiSpectral Instrument，  
 ESA/WorldCover/v200/2021 土地覆蓋分析，使用 smileRandomForest(numberOfTrees=100)
 """)
+
+# 載入字體（需提前下載字體檔）
+fontManager.addfont('TaipeiSansTCBeta-Regular.ttf')
+mpl.rc('font', family='Taipei Sans TC Beta')
+
+# 建立資料
+data = {
+    'Category': ['10 TREES', '30 GRASSLAND', '40 CROPLAND', '50 BUILT UP', '80 WATER'],
+    '2016': [60.22, 11.43, 0.85, 0.66, 0.19],
+    '2018': [58.88, 12.86, 0.91, 0.53, 0.18],
+    '2024': [51.40, 16.12, 3.93, 1.55, 0.35]
+}
+df = pd.DataFrame(data)
+
+# 繪圖
+x = np.arange(len(df['Category']))
+width = 0.25
+fig, ax = plt.subplots(figsize=(12, 6))
+
+bars1 = ax.bar(x - width, df['2016'], width, label='2016', color='#1f77b4')
+bars2 = ax.bar(x, df['2018'], width, label='2018', color='#ff7f0e')
+bars3 = ax.bar(x + width, df['2024'], width, label='2024', color='#2ca02c')
+
+ax.set_ylabel('面積(平方公里)', fontsize=12)
+ax.set_xlabel('土地使用分類', fontsize=12)
+ax.set_title('清境農場土地使用分類面積', fontsize=14)
+ax.set_xticks(x)
+ax.set_xticklabels(df['Category'])
+ax.legend()
+
+# 數值標籤
+def add_labels(bars):
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate(f'{height:.2f}',
+                    xy=(bar.get_x() + bar.get_width()/2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha='center', va='bottom', fontsize=9)
+
+add_labels(bars1)
+add_labels(bars2)
+add_labels(bars3)
+
+plt.tight_layout()
+
+# 將圖表顯示在 Streamlit
+st.pyplot(fig)
+
