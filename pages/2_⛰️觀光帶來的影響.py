@@ -108,23 +108,33 @@ my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 
 
-# 上傳 hotel_love.zip 並顯示民宿點位
-#uploaded_file = st.file_uploader("hotel_love.zip (包含 .shp/.dbf/.shx/.prj)", type="zip")
+import os
+import zipfile
+import geopandas as gpd
+import streamlit as st
+# 解壓縮 hotel_love.zip
+zip_path = "hotel_love.zip"
+extract_path = "shp_temp"
 
-#if uploaded_file is not None:
-    with zipfile.ZipFile(uploaded_file, "r") as zip_ref:
-        zip_ref.extractall("shp_temp")
-    shp_files = [f for f in os.listdir("shp_temp") if f.endswith(".shp")]
-    if shp_files:
-        shp_path = os.path.join("shp_temp", shp_files[0])
+with zipfile.ZipFile(zip_path, "r") as zip_ref:
+    zip_ref.extractall(extract_path)
+
+# 尋找 Shapefile 路徑
+shp_path = next(
+    (os.path.join(extract_path, f) for f in os.listdir(extract_path) if f.endswith(".shp")),
+    None
+)
+
+if shp_path:
+    try:
         gdf = gpd.read_file(shp_path)
 
-        # 若不是 WGS84 則轉換
+        # 確保使用 WGS84 座標系統
         if gdf.crs != "EPSG:4326":
             gdf = gdf.to_crs("EPSG:4326")
 
-        # 加到地圖
-        my_Map.add_gdf(gdf, layer_name="Renai_Hotel")
+        # 加入民宿點位圖層
+        my_Map.add_gdf(gdf, layer_name="合法民宿")
 
 
 
