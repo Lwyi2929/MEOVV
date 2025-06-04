@@ -63,9 +63,6 @@ my_Map.split_map(left_layer, right_layer)
 my_Map.to_streamlit(height=600)
 
 
-
-st.set_page_config(layout="wide")
-st.title("🌀自然災害影響")
 st.write("""
 Harmonized Sentinel-2 
 康芮颱風前(2024/09/01-2024/10/29) : 康芮颱風後(2024/10/30-2024/12/30)
