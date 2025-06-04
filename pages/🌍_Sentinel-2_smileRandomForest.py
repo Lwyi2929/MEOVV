@@ -69,3 +69,52 @@ my_Map.centerObject(roi, 12)
 
 # 顯示地圖
 my_Map.to_streamlit(height=600)
+
+st.title("2016/2018/2024年土地利用分類")
+st.header("""
+清境地區民宿林立，引發過度開發質疑，南投縣政府2012年頒布全面停發建照的[禁限建令](https://e-info.org.tw/node/210847)，並連續四年進行安全監測，老舊眷村的禁建，與民宿過度開發有關。
+在2018年5月15日，針對老舊眷村，有條件解除禁建令，並規定如果建築基地位在山崩地滑敏感區，必須進行詳細的地質鑽探。
+""")
+
+st.write("""
+2016年土地利用分析
+""")
+
+#隨機採樣
+sample = image.addBands(my_lc).stratifiedSample(**{
+        'numPoints': 10000,
+        'classBand': label,
+        'region': roi,            # ✅ 使用 roi
+        'scale': 10,
+        'geometries': True
+    })
+#訓練
+sample = sample.randomColumn()
+trainingSample = sample.filter('random <= 0.8')
+validationSample = sample.filter('random > 0.8')
+
+my_trainedClassifier = ee.Classifier.smileRandomForest(numberOfTrees=100).train(**{
+    'features': trainingSample,
+    'classProperty': 'lc',
+    'inputProperties': image.bandNames()
+})
+# 取得 2016 年影像並進行處理
+my_newimg_2016 = (
+    ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
+    .filterBounds(my_point)
+    .filterDate('2016-01-01', '2016-12-31')
+    .sort('CLOUDY_PIXEL_PERCENTAGE')
+    .first()
+    .clip(roi)
+    .select('B.*')
+)
+# 分類影像
+my_newimgClassified2016 = my_newimg_2016.classify(my_trainedClassifier)
+
+my_Map = geemap.Map()
+my_Map .centerObject(my_newimg_2016, 12)
+my_Map.addLayer(my_newimg_2016, vis_params, "Sentinel-2")
+my_Map.addLayer(my_newimgClassified2016, classVis, 'Classified_smileRandomForest')
+my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
+# 顯示地圖
+my_Map.to_streamlit(height=600)
