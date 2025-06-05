@@ -243,3 +243,7 @@ def main():
     collapse_map = geemap.Map()
     collapse_map.centerObject(default_roi, 12) # 以預設 ROI 為中心
     collapse_map.to_streamlit(height=600)
+
+
+if __name__ == "__main__":
+    main()
