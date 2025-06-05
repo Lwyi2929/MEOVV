@@ -27,17 +27,16 @@ def initialize_gee():
         st.stop() # 如果 GEE 無法初始化，則停止應用程式運行
 
 @st.cache_data
-def get_sentinel_image(point_wkt, roi_wkt, start_date, end_date): # 參數名稱變更
+def get_sentinel_image(point_coords, roi_coords, start_date, end_date): # 參數名稱變更為更明確的 coords
     """
     獲取指定日期範圍內雲量最低的 Sentinel-2 影像。
     使用 st.cache_data 緩存 GEE 影像查詢結果。
-    現在接受 WKT 字符串作為 point 和 roi 的輸入。
+    現在接受座標列表作為 point 和 roi 的輸入。
     """
     try:
-        # 將 WKT 字符串轉換回 ee.Geometry 物件
-        point = ee.Feature(ee.Geometry.Point(point_wkt)).geometry()
-        roi = ee.Feature(ee.Geometry.Rectangle(roi_wkt)).geometry()
-
+        # 將座標列表轉換回 ee.Geometry 物件
+        point = ee.Geometry.Point(point_coords)
+        roi = ee.Geometry.Rectangle(roi_coords)
 
         image = (
             ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
@@ -57,7 +56,7 @@ def get_sentinel_image(point_wkt, roi_wkt, start_date, end_date): # 參數名稱
         st.error(f"獲取 Sentinel 影像失敗 ({start_date} - {end_date}): {e}")
         return None
 
-# --- 2. Shapefile 載入函式 (保持不變) ---
+# --- 2. Shapefile 載入函式 ---
 @st.cache_data(show_spinner="正在下載並處理崩塌資料...")
 def load_and_process_shp(url):
     """
@@ -116,7 +115,7 @@ def load_and_process_shp(url):
         st.error(f"讀取或處理 SHP 文件失敗: {e}")
         return None
 
-# --- 3. 地圖顯示函式 (保持不變) ---
+# --- 3. 地圖顯示函式 ---
 def display_split_map(map_object, left_ee_image, left_name, right_ee_image, right_name, vis_params):
     """
     顯示左右分開的地圖。
@@ -141,7 +140,6 @@ def main():
     initialize_gee()
 
     # 定義常用的 ROI 和中心點
-    # 將 ee.Geometry 物件的座標直接傳遞
     default_roi_coords = [121.116451, 24.020390, 121.21, 24.09]
     default_point_coords = [121.1617, 24.0495]
 
@@ -158,10 +156,8 @@ def main():
 
     # 獲取卡努颱風前後影像
     with st.spinner("正在載入卡努颱風前影像..."):
-        # 調用時傳遞可哈希的座標列表
         kanu_img_bef = get_sentinel_image(default_point_coords, default_roi_coords, '2023-06-01', '2023-07-31')
     with st.spinner("正在載入卡努颱風後影像..."):
-        # 調用時傳遞可哈希的座標列表
         kanu_img_aft = get_sentinel_image(default_point_coords, default_roi_coords, '2023-08-01', '2023-09-30')
 
     kanu_map = geemap.Map()
@@ -183,10 +179,8 @@ def main():
 
     # 獲取康芮颱風前後影像
     with st.spinner("正在載入康芮颱風前影像..."):
-        # 調用時傳遞可哈希的座標列表
         kangrui_img_bef = get_sentinel_image(default_point_coords, default_roi_coords, '2024-09-01', '2024-10-29')
     with st.spinner("正在載入康芮颱風後影像..."):
-        # 調用時傳遞可哈希的座標列表
         kangrui_img_aft = get_sentinel_image(default_point_coords, default_roi_coords, '2024-10-30', '2024-12-30')
 
     kangrui_map = geemap.Map()
@@ -227,29 +221,20 @@ def main():
     # --- 崩塌範圍 SHP 圖層 ---
     st.header("⛰️ 崩塌範圍圖層")
     st.write("---")
-    # 注意：你的 collapse110.zip 連結指向的是 GitHub 上的 HTML 頁面，而不是原始 ZIP 文件。
-    # 你需要提供一個可以**直接下載** ZIP 檔案的連結。
-    # 我假設你修正後的連結會像這樣：
-    collapse110_zip_url = "https://github.com/Lwyi2929/MEOVV/raw/d199a009501f5e828b713a7ed8014c24ffb0e86d/collapse110.zip" # 修正後的連結範例
+    # 確保使用正確的原始檔案連結
+    collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip"
 
     gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
 
     collapse_map = geemap.Map()
+
+    if gdf_collapse110 is not None:
+        collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)', zoom_to_layer=False)
+        st.success("崩塌資料已載入並顯示。")
+    else:
+        st.warning("未能載入崩塌資料，地圖上可能不會顯示。請檢查 SHP 檔案 URL 或內容。")
+
     collapse_map.centerObject(default_roi, 12) # 以預設 ROI 為中心
-
-     # --- 崩塌範圍 SHP 圖層 ---
-
-    st.header("⛰️ 崩塌範圍圖層")
-
-    st.write("---")
-
-    collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip" # 修正後的連結範例
-    gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
-
-    collapse_map = geemap.Map()
-    if gdf_collapse110 is not None:
-        collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)')
-    collapse_map.centerObject(default_roi, 12)
     collapse_map.to_streamlit(height=600)
 
 if __name__ == "__main__":
