@@ -1,10 +1,10 @@
 import streamlit as st
 #import leafmap.foliumap as leafmap
 # filename: app.py
-import streamlit as st
+import zipfile
+import os
 import geopandas as gpd
-import folium
-from streamlit_folium import st_folium
+import tempfile
 
 st.title("⛰️ 清境農場歷年遊憩據點人次統計")
 st.subheader("""
@@ -109,24 +109,43 @@ my_newimgClassified2024 = my_newimg_2024.classify(my_trainedClassifier)
 my_Map = geemap.Map()
 my_Map.centerObject(my_newimg_2024, 12)
 my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
+
+st.sidebar.header("📁 hotel_love(.zip)")
+
+uploaded_zip = st.sidebar.file_uploader("上傳 Shapefile ZIP 檔", type=["zip"])
+
+if uploaded_zip:
+    # 建立暫存資料夾
+    with tempfile.TemporaryDirectory() as tmpdir:
+        zip_path = os.path.join(tmpdir, "shapefile.zip")
+        
+        # 儲存上傳的 zip 檔案
+        with open(zip_path, "wb") as f:
+            f.write(uploaded_zip.read())
+
+        # 解壓縮
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
+            zip_ref.extractall(tmpdir)
+
+        # 尋找 .shp 檔案
+        shp_files = [f for f in os.listdir(tmpdir) if f.endswith(".shp")]
+        if shp_files:
+            shp_path = os.path.join(tmpdir, shp_files[0])
+            gdf = gpd.read_file(shp_path)
+            st.success(f"✅ 成功載入 Shapefile：{shp_files[0]}")
+
+            # 顯示屬性表
+            st.dataframe(gdf.head())
+
+            # 顯示在地圖上
+            import folium
+            from streamlit_folium import st_folium
+            m = folium.Map(location=[gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()], zoom_start=13)
+            folium.GeoJson(gdf).add_to(m)
+            st_folium(m, height=500)
+        else:
+            st.error("❌ ZIP 壓縮檔中找不到 .shp 檔案")
 my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 
 
-# 顯示標題
-st.title("崩塌地圖展示 (collapse_110.shp)")
-in_shp = 'hotel_love.shp'  # ⚠️ 放在同一資料夾或換成你的路徑
-gdf = gpd.read_file(in_shp)
-
-# 建立 folium 地圖
-center = [gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()]
-m = folium.Map(location=center, zoom_start=13)
-
-# 加上 GeoData
-folium.GeoJson(gdf).add_to(m)
-
-# 顯示在 Streamlit 中
-st_data = st_folium(m, width=700, height=500)
-
-
-my_Map.to_streamlit(height=600)
