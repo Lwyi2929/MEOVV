@@ -107,3 +107,25 @@ right_layer = geemap.ee_tile_layer(my_newimg_Aft,vis_params, '康芮颱風後')
 my_Map.split_map(left_layer, right_layer)
 # 顯示地圖
 my_Map.to_streamlit(height=600)
+
+st.write("### 🌿 NDVI 差異圖 (康芮颱風影響)")
+
+# 取得 NDVI 災前/災後影像（康芮）
+ndvi_bef = my_newimg_Bef.normalizedDifference(['B8', 'B4']).rename('NDVI_Before')
+ndvi_aft = my_newimg_Aft.normalizedDifference(['B8', 'B4']).rename('NDVI_After')
+ndvi_diff = ndvi_aft.subtract(ndvi_bef).rename('NDVI_Diff')
+
+# 可視化參數
+ndvi_vis = {
+    'min': -1,
+    'max': 1,
+    'palette': ['red', 'white', 'green']
+}
+
+# 建立地圖顯示 NDVI 差異
+ndvi_map = geemap.Map()
+ndvi_map.centerObject(ndvi_diff.geometry(), 13)
+ndvi_map.addLayer(ndvi_diff, ndvi_vis, 'NDVI 差異圖 (災後 - 災前)')
+
+# 顯示地圖
+ndvi_map.to_streamlit(height=600)
