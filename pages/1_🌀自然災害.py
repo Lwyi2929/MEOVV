@@ -21,7 +21,6 @@ def initialize_gee():
             scopes=["https://www.googleapis.com/auth/earthengine"]
         )
         ee.Initialize(credentials)
-        st.success("Earth Engine 初始化成功！")
     except Exception as e:
         st.error(f"Earth Engine 初始化失敗：請檢查您的 GEE_SERVICE_ACCOUNT 設定。錯誤訊息: {e}")
         st.stop() # 如果 GEE 無法初始化，則停止應用程式運行
@@ -242,19 +241,14 @@ def main():
     # --- 崩塌範圍 SHP 圖層 ---
     st.header("⛰️ 崩塌範圍圖層")
     st.write("---")
-    # 注意：你的 collapse110.zip 連結指向的是 GitHub 上的 HTML 頁面，而不是原始 ZIP 文件。
-    # 你需要提供一個可以**直接下載** ZIP 檔案的連結。
-    # 我假設你修正後的連結會像這樣：
     collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip" # 修正後的連結範例
-
     gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
 
     collapse_map = geemap.Map()
-    collapse_map.centerObject(default_roi, 12) # 以預設 ROI 為中心
 
     if gdf_collapse110 is not None:
         collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)')
     else:
         st.warning("未能載入崩塌資料，地圖上可能不會顯示。請檢查 SHP 檔案 URL 或內容。")
-
+    collapse_map.centerObject(default_roi, 12)
     collapse_map.to_streamlit(height=600)
