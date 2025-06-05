@@ -101,7 +101,7 @@ my_newimgClassified2024 = my_newimg_2024.classify(my_trainedClassifier)
 
 # --- 地圖創建與圖層添加 ---
 my_Map = geemap.Map() # 創建 geemap 的地圖物件
-my_Map.centerObject(my_newimg_2024, 12) # 將地圖中心設置到 2024 影像上
+my_Map.centerObject(my_newimg_2024, 14) # 將地圖中心設置到 2024 影像上
 
 # 添加 Earth Engine 圖層 (geemap 的 addLayer 是 add_ee_layer 的別名)
 my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
@@ -126,7 +126,6 @@ def load_and_process_hotel_shp(url):
         with open(zip_path, "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
-        st.write("下載完成。")
     except requests.exceptions.RequestException as e:
         st.error(f"下載失敗: {e}")
         return None
@@ -136,7 +135,6 @@ def load_and_process_hotel_shp(url):
     try:
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(extract_dir)
-        st.write("解壓縮完成。")
     except zipfile.BadZipFile:
         st.error(f"'{zip_path}' 不是一個有效的 ZIP 文件。")
         return None
@@ -167,7 +165,6 @@ def load_and_process_hotel_shp(url):
             gdf = gdf.set_crs("EPSG:4326", allow_override=True)
         elif gdf.crs != "EPSG:4326":
             gdf = gdf.to_crs("EPSG:4326")
-        st.write("民宿資料載入成功。")
         return gdf
     except Exception as e:
         st.error(f"讀取或處理 SHP 文件失敗: {e}")
