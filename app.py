@@ -26,10 +26,7 @@ st.markdown(markdown)
 
 
 # Display the image
-st.image("sheep.png", caption="Annual tourist visits to Qingjing Farm",use_container_width=True)
-st.write("""
-青青草原
-""")
+st.image("sheep.png", caption="""青青草原""",use_container_width=True)
 
 
 #st.title("選擇日期區間")
