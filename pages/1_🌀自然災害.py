@@ -133,6 +133,8 @@ ndvi_map.addLayer(ndvi_diff, ndvi_vis, 'NDVI 差異圖 (災後 - 災前)')
 # 顯示地圖
 ndvi_map.to_streamlit(height=600)
 
+=====================================================
+my_Map  = geemap.Map()
 
 @st.cache_data
 def load_and_process_collapse110_shp(url):
@@ -204,4 +206,5 @@ else:
     st.warning("未能載入崩塌資料，地圖上可能不會顯示。")
 
 # 顯示地圖
+my_Map .centerObject(roi, 12)
 my_Map.to_streamlit(height=600)
