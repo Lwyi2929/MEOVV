@@ -236,14 +236,10 @@ def main():
     # 確保使用正確的原始檔案連結
     collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip"
     gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
-    collapse_map = geemap.Map()
     if gdf_collapse110 is not None:
         collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)', zoom_to_layer=False)
     else:
         st.warning("未能載入崩塌資料，地圖上可能不會顯示。請檢查 SHP 檔案 URL 或內容。")
-
+    collapse_map = geemap.Map()
     collapse_map.centerObject(default_roi, 12) # 以預設 ROI 為中心
     collapse_map.to_streamlit(height=600)
-
-if __name__ == "__main__":
-    main()
