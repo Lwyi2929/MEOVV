@@ -173,8 +173,28 @@ def main():
     display_split_map(kanu_map, kanu_img_bef, '卡努颱風前 (2023/06/01-07/31)',
                       kanu_img_aft, '卡努颱風後 (2023/08/01-09/30)', vis_params)
     kanu_map.to_streamlit(height=600)
+    
+     # --- NDVI 差異圖區塊 (卡努颱風) ---
+    st.header("🌿 卡努颱風造成 NDVI 值變化差異圖")
+    if kangrui_img_bef and kangrui_img_aft:
+        ndvi_bef = kanu_img_bef.normalizedDifference(['B8', 'B4']).rename('NDVI_Before')
+        ndvi_aft = kanu_img_aft.normalizedDifference(['B8', 'B4']).rename('NDVI_After')
+        ndvi_diff = ndvi_aft.subtract(ndvi_bef).rename('NDVI_Diff')
 
-    st.markdown("---") # 分隔線
+        ndvi_vis = {
+            'min': -1,
+            'max': 1,
+            'palette': ['red', 'white', 'green'] # 紅色表示減少，綠色表示增加
+        }
+
+        ndvi_map = geemap.Map()
+        ndvi_map.centerObject(ndvi_diff.geometry(), 13)
+        ndvi_map.addLayer(ndvi_diff, ndvi_vis, 'NDVI 差異圖 (災後 - 災前)')
+        ndvi_map.add_colorbar(ndvi_vis, label="NDVI 差異", orientation="horizontal", layer_name='NDVI 差異')
+        ndvi_map.to_streamlit(height=600)
+    else:
+        st.info("由於缺乏卡努颱風前後影像，無法顯示 NDVI 差異圖。")
+
 
     # --- 康芮颱風區塊 ---
     st.header("🌊 康芮颱風影響 (2024)")
@@ -231,18 +251,13 @@ def main():
     # 你需要提供一個可以**直接下載** ZIP 檔案的連結。
     # 我假設你修正後的連結會像這樣：
     collapse110_zip_url = "https://github.com/Lwyi2929/MEOVV/raw/d199a009501f5e828b713a7ed8014c24ffb0e86d/collapse110.zip" # 修正後的連結範例
-
     gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
-
     collapse_map = geemap.Map()
     collapse_map.centerObject(default_roi, 12) # 以預設 ROI 為中心
 
     if gdf_collapse110 is not None:
-        # 使用 st.checkbox 讓使用者決定是否顯示崩塌圖層
-        show_collapse_layer = st.checkbox("顯示崩塌範圍", True)
-        if show_collapse_layer:
-            collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)')
-            st.success("崩塌資料已載入並顯示。")
+        collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)')
+        st.success("崩塌資料已載入並顯示。")
     else:
         st.warning("未能載入崩塌資料，地圖上可能不會顯示。請檢查 SHP 檔案 URL 或內容。")
 
