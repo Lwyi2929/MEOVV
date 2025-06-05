@@ -176,7 +176,7 @@ def main():
     
      # --- NDVI 差異圖區塊 (卡努颱風) ---
     st.header("🌿 卡努颱風造成 NDVI 值變化差異圖")
-    if kangrui_img_bef and kangrui_img_aft:
+    if kanu_img_bef and kanu_img_aft:
         ndvi_bef = kanu_img_bef.normalizedDifference(['B8', 'B4']).rename('NDVI_Before')
         ndvi_aft = kanu_img_aft.normalizedDifference(['B8', 'B4']).rename('NDVI_After')
         ndvi_diff = ndvi_aft.subtract(ndvi_bef).rename('NDVI_Diff')
