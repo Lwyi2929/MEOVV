@@ -3,7 +3,6 @@ import streamlit as st
 # filename: app.py
 import zipfile
 import os
-import geopandas as gpd
 import tempfile
 
 st.title("⛰️ 清境農場歷年遊憩據點人次統計")
