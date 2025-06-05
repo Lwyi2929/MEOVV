@@ -250,7 +250,10 @@ st.header("⛰️ 崩塌範圍圖層")
 st.write("---")
 collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip"
 gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
-my_Map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)', zoom_to_layer=False)
+if gdf_collapse110 is not None:
+    my_Map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)', zoom_to_layer=False)
+else:
+    st.warning("未能載入崩塌圖資，地圖上可能不會顯示。")
 
 # 顯示地圖
 my_Map.to_streamlit(height=600)
