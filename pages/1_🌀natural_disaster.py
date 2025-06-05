@@ -50,64 +50,6 @@ def get_sentinel_image(point_coords, roi_coords, start_date, end_date): # 參數
     except Exception as e:
         st.error(f"獲取 Sentinel 影像失敗 ({start_date} - {end_date}): {e}")
         return None
-
-# --- 2. Shapefile 載入函式 ---
-@st.cache_data
-def load_and_process_shp(url):
-    """
-    下載、解壓縮並讀取 SHP 文件。
-    使用 st.cache_data 緩存下載和處理結果。
-    """
-    zip_path = "downloaded_shapefile.zip"
-    extract_dir = "extracted_shapefile_data"
-
-    os.makedirs(extract_dir, exist_ok=True)
-
-    try:
-        with requests.get(url, stream=True) as r:
-            r.raise_for_status()
-            with open(zip_path, "wb") as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
-    except requests.exceptions.RequestException as e:
-        st.error(f"下載失敗: {e}")
-        return None
-
-    try:
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(extract_dir)
-    except zipfile.BadZipFile:
-        st.error(f"'{zip_path}' 不是一個有效的 ZIP 文件。")
-        return None
-    except Exception as e:
-        st.error(f"解壓縮失敗: {e}")
-        return None
-
-    shp_file_path = None
-    for root, _, files in os.walk(extract_dir):
-        for file in files:
-            if file.endswith(".shp"):
-                shp_file_path = os.path.join(root, file)
-                break
-        if shp_file_path:
-            break
-
-    if shp_file_path is None:
-        st.error("在解壓縮的資料夾中找不到 .shp 文件。")
-        return None
-
-    try:
-        gdf = gpd.read_file(shp_file_path)
-        if gdf.crs is None:
-            gdf = gdf.set_crs("EPSG:4326", allow_override=True)
-        elif gdf.crs != "EPSG:4326":
-            gdf = gdf.to_crs("EPSG:4326")
-        st.success("SHP 文件已成功讀取並轉換 CRS。")
-        return gdf
-    except Exception as e:
-        st.error(f"讀取或處理 SHP 文件失敗: {e}")
-        return None
-
 # --- 3. 地圖顯示函式 ---
 def display_split_map(map_object, left_ee_image, left_name, right_ee_image, right_name, vis_params):
     """
@@ -246,6 +188,72 @@ def main():
 
     collapse_map.centerObject(default_roi, 12) # <--- collapse_map is used here
     collapse_map.to_streamlit(height=600) # <--- collapse_map is used here
+
+@st.cache_data
+def load_and_process_hotel_shp(url):
+    zip_path = "hotel_love.zip" # 直接在當前工作目錄下載
+    extract_dir = "hotel_data" # 創建一個專門的資料夾來解壓縮
+
+    # 確保下載目錄存在（如果 Streamlit Cloud 清理 /tmp 以外的目錄）
+    os.makedirs(extract_dir, exist_ok=True)
+
+    # 下載 ZIP 文件
+    try:
+        r = requests.get(url, stream=True)
+        r.raise_for_status() # 檢查 HTTP 請求是否成功
+        with open(zip_path, "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+    except requests.exceptions.RequestException as e:
+        st.error(f"下載失敗: {e}")
+        return None
+
+    # 解壓縮 ZIP 文件
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_dir)
+    except zipfile.BadZipFile:
+        st.error(f"'{zip_path}' 不是一個有效的 ZIP 文件。")
+        return None
+    except Exception as e:
+        st.error(f"解壓縮失敗: {e}")
+        return None
+
+    # 尋找 .shp 文件
+    shp_file_path = None
+    for root, _, files in os.walk(extract_dir):
+        for file in files:
+            if file.endswith(".shp"):
+                shp_file_path = os.path.join(root, file)
+                break
+        if shp_file_path:
+            break
+
+    if shp_file_path is None:
+        st.error("在解壓縮的資料夾中找不到 .shp 文件。")
+        return None
+
+    # 讀取 GeoDataFrame 並處理 CRS
+    try:
+        gdf = gpd.read_file(shp_file_path)
+        # CRS 轉換
+        if gdf.crs is None:
+            # 假設您的民宿資料是WGS84 (EPSG:4326)，如果不是，請修改這裡
+            gdf = gdf.set_crs("EPSG:4326", allow_override=True)
+        elif gdf.crs != "EPSG:4326":
+            gdf = gdf.to_crs("EPSG:4326")
+        return gdf
+    except Exception as e:
+        st.error(f"讀取或處理 SHP 文件失敗: {e}")
+        return None
+st.header("⛰️ 崩塌範圍圖層")
+st.write("---")
+collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip"
+gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
+my_Map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)', zoom_to_layer=False)
+
+# 顯示地圖
+my_Map.to_streamlit(height=600)
 
 if __name__ == "__main__":
     main()
