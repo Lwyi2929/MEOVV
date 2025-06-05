@@ -1,5 +1,10 @@
 import streamlit as st
 #import leafmap.foliumap as leafmap
+# filename: app.py
+import streamlit as st
+import geopandas as gpd
+import folium
+from streamlit_folium import st_folium
 
 st.title("⛰️ 清境農場歷年遊憩據點人次統計")
 st.subheader("""
@@ -106,6 +111,22 @@ my_Map.centerObject(my_newimg_2024, 12)
 my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
 my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
+
+
+# 顯示標題
+st.title("崩塌地圖展示 (collapse_110.shp)")
+in_shp = 'hotel_love.shp'  # ⚠️ 放在同一資料夾或換成你的路徑
+gdf = gpd.read_file(in_shp)
+
+# 建立 folium 地圖
+center = [gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()]
+m = folium.Map(location=center, zoom_start=13)
+
+# 加上 GeoData
+folium.GeoJson(gdf).add_to(m)
+
+# 顯示在 Streamlit 中
+st_data = st_folium(m, width=700, height=500)
 
 
 my_Map.to_streamlit(height=600)
