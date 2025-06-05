@@ -198,9 +198,9 @@ if not os.path.exists(font_path):
         f.write(r.content)
 
 # 註冊字型
-font_manager.fontManager.addfont(font_path)
-plt.rcParams['font.family'] = 'Noto Sans TC'
-plt.rcParams['axes.unicode_minus'] = False
+#font_manager.fontManager.addfont(font_path)
+#plt.rcParams['font.family'] = 'Noto Sans TC'
+#plt.rcParams['axes.unicode_minus'] = False
 
 # 顯示標題
 st.title("🌍 環境變遷分析：土地使用變化")
