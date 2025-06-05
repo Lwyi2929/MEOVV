@@ -119,6 +119,10 @@ my_Map.addLayer(my_newimgClassified2016, classVis, 'Classified_smileRandomForest
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 my_Map.to_streamlit(height=600)
 
+st.write("""
+🌍10 Tree:60.22平方公里 ；30 Grassland:11.43平方公里 :40 Cropland:0.85平方公里 ；50 Built-up:0.66平方公里 ；80 Open Water:0.19平方公里
+
+""")
 
 st.write("""
 🌍2018年土地利用分析_禁限建令解禁
@@ -143,7 +147,10 @@ my_Map.addLayer(my_newimg_2018, vis_params, "Sentinel-2")
 my_Map.addLayer(my_newimgClassified2018, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 my_Map.to_streamlit(height=600)
+st.write("""
+🌍10 Tree:58.88平方公里 ；30 Grassland:12.86平方公里 :40 Cropland:0.91平方公里 ；50 Built-up:0.53平方公里 ；80 Open Water:0.18平方公里
 
+""")
 st.write("""
 🌍2024年土地利用分析_禁限建令解禁後多年
 """)
@@ -167,6 +174,10 @@ my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
 my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 my_Map.to_streamlit(height=600)
+st.write("""
+🌍10 Tree:51.40平方公里 ；30 Grassland:16.12平方公里 :40 Cropland:3.93平方公里 ；50 Built-up:1.55平方公里 ；80 Open Water:0.35平方公里
+
+""")
 
 #環境變遷
 import streamlit as st
