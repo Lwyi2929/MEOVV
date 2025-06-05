@@ -193,7 +193,7 @@ def load_and_process_collapse110_shp(url):
         return None
 
 # 調用緩存的函數來獲取 gdf
-collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/refs/heads/main/collapse110.zip"
+collapse110_zip_url = "https://github.com/Lwyi2929/MEOVV/blob/d199a009501f5e828b713a7ed8014c24ffb0e86d/collapse110.zip"
 gdf_collapse110 = load_and_process_collapse110_shp(collapse110_zip_url)
 
 if gdf_collapse110 is not None:
