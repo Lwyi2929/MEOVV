@@ -112,7 +112,10 @@ if gdf.crs != "EPSG:4326":
 
 my_newimgClassified2024
 m = folium.Map(location=[24.0495, 121.1617], zoom_start=13)
-m.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
+m.add_ee_layer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
+m.add_ee_layer(image, vis_params, 'Sentinel-2 Image') # 可以將 Sentinel-2 也加上
+m.add_ee_layer(my_lc, classVis, 'ESA WorldCover 2021') # 將土地覆蓋圖層也加上
+
 # 在地圖上加合法民宿
 folium.GeoJson(gdf, name="合法民宿").add_to(m)
 
