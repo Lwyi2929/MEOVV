@@ -250,7 +250,7 @@ def main():
     # 注意：你的 collapse110.zip 連結指向的是 GitHub 上的 HTML 頁面，而不是原始 ZIP 文件。
     # 你需要提供一個可以**直接下載** ZIP 檔案的連結。
     # 我假設你修正後的連結會像這樣：
-    collapse110_zip_url = "https://github.com/Lwyi2929/MEOVV/raw/d199a009501f5e828b713a7ed8014c24ffb0e86d/collapse110.zip" # 修正後的連結範例
+    collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip" # 修正後的連結範例
 
     gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
 
