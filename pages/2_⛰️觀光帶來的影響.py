@@ -108,5 +108,4 @@ my_Map.centerObject(my_newimg_2024, 12)
 my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
 my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
-
-
+my_Map.to_streamlit(height=600)
