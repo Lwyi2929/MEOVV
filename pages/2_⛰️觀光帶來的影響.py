@@ -58,7 +58,7 @@ classVis = {
 }
 
 # 隨機採樣與訓練
-label = 'lc' 
+label = 'lc'
 sample = image.addBands(my_lc).stratifiedSample(**{
     'numPoints': 10000,
     'classBand': label,
@@ -105,9 +105,24 @@ shp_files = [f for f in os.listdir(extract_dir) if f.endswith(".shp")]
 in_shp = os.path.join(extract_dir, shp_files[0])
 gdf = gpd.read_file(in_shp)
 
+# --- 這裡加入 CRS 轉換 ---
+# 檢查 GeoDataFrame 是否有定義 CRS
+if gdf.crs is None:
+    # 如果沒有定義，嘗試設定為常見的台灣坐標系 (例如 EPSG:3826 TWD97 或 EPSG:4326 WGS84)
+    # 通常SHP文件會包含.prj文件來定義CRS，如果沒有或讀取失敗，就需要手動設定。
+    # 這裡假設您的SHP文件如果沒有CRS定義，但內容本身是經緯度（WGS84）
+    # 如果您確定SHP文件的實際CRS不是WGS84，請將 'EPSG:4326' 替換為正確的CRS，例如 'EPSG:3826'
+    gdf = gdf.set_crs("EPSG:4326", allow_override=True)
+    # 或者如果內容是其他CRS，例如TWD97，則先設定再轉換
+    # gdf = gdf.set_crs("EPSG:3826", allow_override=True).to_crs("EPSG:4326")
+
+# 如果已經有CRS但不是EPSG:4326，則進行轉換
+if gdf.crs != "EPSG:4326":
+    gdf = gdf.to_crs("EPSG:4326")
+# --- 結束 CRS 轉換 ---
+
 # 在地圖上加合法民宿
 folium.GeoJson(gdf, name="合法民宿").add_to(m)
 
 # 顯示地圖
 st_data = st_folium(m, height=600)
-
