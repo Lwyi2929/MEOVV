@@ -3,3 +3,5 @@ earthengine-api
 geemap
 google-auth
 geopandas
+streamlit-folium
+folium
