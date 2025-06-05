@@ -5,3 +5,7 @@ google-auth
 geopandas
 streamlit-folium
 folium
+requests
+fiona
+pyproj
+shapely
