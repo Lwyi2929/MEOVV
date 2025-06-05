@@ -172,23 +172,6 @@ def main():
 
     st.markdown("---") # 分隔線
 
-    # --- 崩塌範圍 SHP 圖層 ---
-    st.header("⛰️ 崩塌範圍圖層")
-    st.write("---")
-    # 確保使用正確的原始檔案連結
-    collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip"
-    gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
-    collapse_map = geemap.Map() 
-
-    if gdf_collapse110 is not None:
-        collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)', zoom_to_layer=False)
-        st.success("崩塌資料已載入並顯示。")
-    else:
-        st.warning("未能載入崩塌資料，地圖上可能不會顯示。請檢查 SHP 檔案 URL 或內容。")
-
-    collapse_map.centerObject(default_roi, 12) # <--- collapse_map is used here
-    collapse_map.to_streamlit(height=600) # <--- collapse_map is used here
-
 @st.cache_data
 def load_and_process_hotel_shp(url):
     zip_path = "hotel_love.zip" # 直接在當前工作目錄下載
@@ -246,17 +229,17 @@ def load_and_process_hotel_shp(url):
     except Exception as e:
         st.error(f"讀取或處理 SHP 文件失敗: {e}")
         return None
-st.header("⛰️ 崩塌範圍圖層")
-st.write("---")
-collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip"
-gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
-if gdf_collapse110 is not None:
-    my_Map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)', zoom_to_layer=False)
-else:
-    st.warning("未能載入崩塌圖資，地圖上可能不會顯示。")
+    st.header("⛰️ 崩塌範圍圖層")
+    st.write("---")
+    collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip"
+    gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
+    if gdf_collapse110 is not None:
+        my_Map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)', zoom_to_layer=False)
+    else:
+        st.warning("未能載入崩塌圖資，地圖上可能不會顯示。")
 
-# 顯示地圖
-my_Map.to_streamlit(height=600)
+    # 顯示地圖
+    my_Map.to_streamlit(height=600)
 
 if __name__ == "__main__":
     main()
