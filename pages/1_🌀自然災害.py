@@ -115,17 +115,16 @@ ndvi_bef = my_newimg_Bef.normalizedDifference(['B8', 'B4']).rename('NDVI_Before'
 ndvi_aft = my_newimg_Aft.normalizedDifference(['B8', 'B4']).rename('NDVI_After')
 ndvi_diff = ndvi_aft.subtract(ndvi_bef).rename('NDVI_Diff')
 
-# 可視化參數
 ndvi_vis = {
-    'min': -1,
-    'max': 1,
+    'min': -0.5,
+    'max': 0.5,
     'palette': ['red', 'white', 'green']
 }
 
 # 建立地圖顯示 NDVI 差異
 ndvi_map = geemap.Map()
 ndvi_map.centerObject(ndvi_diff.geometry(), 13)
-ndvi_map.add_colorbar(ndvi_vis, label=layer_name, layer_name=layer_name) #colorbar色棒
+ndvi_map.add_legend(title='NDVI 差異', colors=['red', 'white', 'green'], labels=['下降', '無變化', '上升'])
 ndvi_map.addLayer(ndvi_diff, ndvi_vis, 'NDVI 差異圖 (災後 - 災前)')
 
 # 顯示地圖
