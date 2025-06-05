@@ -169,11 +169,30 @@ def main():
     display_split_map(kanu_map, kanu_img_bef, '卡努颱風前 (2023/06/01-07/31)',
                       kanu_img_aft, '卡努颱風後 (2023/08/01-09/30)', vis_params)
     kanu_map.to_streamlit(height=600)
+# --- NDVI 差異圖區塊 (卡努颱風) ---
+    st.header("🌿 卡努颱風造成 NDVI 值變化差異圖")
+    if kanu_img_bef and kanu_img_aft:
+        ndvi_bef = kanu_img_bef.normalizedDifference(['B8', 'B4']).rename('NDVI_Before')
+        ndvi_aft = kanu_img_aft.normalizedDifference(['B8', 'B4']).rename('NDVI_After')
+        ndvi_diff = ndvi_aft.subtract(ndvi_bef).rename('NDVI_Diff')
 
+        ndvi_vis = {
+            'min': -1,
+            'max': 1,
+            'palette': ['red', 'white', 'green'] # 紅色表示減少，綠色表示增加
+        }
+
+        ndvi_map = geemap.Map()
+        ndvi_map.centerObject(ndvi_diff.geometry(), 13)
+        ndvi_map.addLayer(ndvi_diff, ndvi_vis, 'NDVI 差異圖 (災後 - 災前)')
+        ndvi_map.add_colorbar(ndvi_vis, label="NDVI 差異", orientation="horizontal", layer_name='NDVI 差異')
+        ndvi_map.to_streamlit(height=600)
+    else:
+        st.info("由於缺乏卡努颱風前後影像，無法顯示 NDVI 差異圖。")
     st.markdown("---") # 分隔線
 
     # --- 康芮颱風區塊 ---
-    st.header("🌊 康芮颱風影響 (2024)")
+    st.header("🌪️ 康芮颱風影響 (2024)")
     st.write("影像：Harmonized Sentinel-2")
     st.write("---")
 
