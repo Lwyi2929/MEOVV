@@ -66,16 +66,13 @@ def load_and_process_shp(url):
     """
     zip_path = "downloaded_shapefile.zip"
     extract_dir = "extracted_shapefile_data"
-
     os.makedirs(extract_dir, exist_ok=True)
-
     try:
         with requests.get(url, stream=True) as r:
             r.raise_for_status()
             with open(zip_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
-        st.success(f"已成功下載 ZIP 文件到 {zip_path}")
     except requests.exceptions.RequestException as e:
         st.error(f"下載失敗: {e}")
         return None
@@ -83,7 +80,6 @@ def load_and_process_shp(url):
     try:
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(extract_dir)
-        st.success(f"已成功解壓縮到 {extract_dir}")
     except zipfile.BadZipFile:
         st.error(f"'{zip_path}' 不是一個有效的 ZIP 文件。")
         return None
@@ -110,7 +106,6 @@ def load_and_process_shp(url):
             gdf = gdf.set_crs("EPSG:4326", allow_override=True)
         elif gdf.crs != "EPSG:4326":
             gdf = gdf.to_crs("EPSG:4326")
-        st.success("SHP 文件已成功讀取並轉換 CRS。")
         return gdf
     except Exception as e:
         st.error(f"讀取或處理 SHP 文件失敗: {e}")
@@ -258,11 +253,9 @@ def main():
     collapse_map.centerObject(default_roi, 12) # 以預設 ROI 為中心
 
     if gdf_collapse110 is not None:
-        # 使用 st.checkbox 讓使用者決定是否顯示崩塌圖層
         show_collapse_layer = st.checkbox("顯示崩塌範圍", True)
-        if show_collapse_layer:
-            collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)')
-            st.success("崩塌資料已載入並顯示。")
+        collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)')
+        st.success("崩塌資料已載入並顯示。")
     else:
         st.warning("未能載入崩塌資料，地圖上可能不會顯示。請檢查 SHP 檔案 URL 或內容。")
 
