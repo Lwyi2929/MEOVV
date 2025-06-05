@@ -124,7 +124,7 @@ ndvi_vis = {
 # 建立地圖顯示 NDVI 差異
 ndvi_map = geemap.Map()
 ndvi_map.centerObject(ndvi_diff.geometry(), 13)
-ndvi_map.add_legend(title='NDVI 差異', colors=['red', 'white', 'green'], labels=['下降', '無變化', '上升'])
+ndvi_map.add_legend(title='NDVI 差異', builtin_legend='NDVI')
 ndvi_map.addLayer(ndvi_diff, ndvi_vis, 'NDVI 差異圖 (災後 - 災前)')
 
 # 顯示地圖
