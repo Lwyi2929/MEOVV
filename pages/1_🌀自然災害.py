@@ -135,9 +135,9 @@ ndvi_map.to_streamlit(height=600)
 
 
 @st.cache_data
-def load_and_process_hotel_shp(url):
-    zip_path = "collapse.zip" # 直接在當前工作目錄下載
-    extract_dir = "collapse_data" # 創建一個專門的資料夾來解壓縮
+def load_and_process_collapse110_shp(url):
+    zip_path = "collapse110.zip" # 直接在當前工作目錄下載
+    extract_dir = "collapse110_data" # 創建一個專門的資料夾來解壓縮
 
     # 確保下載目錄存在（如果 Streamlit Cloud 清理 /tmp 以外的目錄）
     os.makedirs(extract_dir, exist_ok=True)
@@ -193,18 +193,15 @@ def load_and_process_hotel_shp(url):
         return None
 
 # 調用緩存的函數來獲取 gdf
-collapse_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/refs/heads/main/hotel_love.zip"
-gdf_hotels = load_and_process_hotel_shp(hotel_zip_url)
+collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/refs/heads/main/collapse110.zip"
+gdf_collapse110 = load_and_process_collapse110_shp(collapse110_zip_url)
 
-if gdf_hotels is not None:
+if gdf_collapse110 is not None:
     # 使用 geemap 的 add_gdf 方法添加 GeoDataFrame
     # geemap 內部會處理 folium 的 GeoJson
-    my_Map.add_gdf(gdf_hotels, layer_name='崩塌範圍')
+    my_Map.add_gdf(gdf_collapse110, layer_name='崩塌範圍')
 else:
     st.warning("未能載入崩塌資料，地圖上可能不會顯示。")
-
-# 添加圖例
-my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 
 # 顯示地圖
 my_Map.to_streamlit(height=600)
