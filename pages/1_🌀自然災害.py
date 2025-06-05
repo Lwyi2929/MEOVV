@@ -108,7 +108,7 @@ my_Map.split_map(left_layer, right_layer)
 # 顯示地圖
 my_Map.to_streamlit(height=600)
 
-st.write("### 🌿 NDVI 差異圖 (康芮颱風影響)")
+st.write("### 🌿_康芮颱風造成NDVI值變化 差異圖")
 
 # 取得 NDVI 災前/災後影像（康芮）
 ndvi_bef = my_newimg_Bef.normalizedDifference(['B8', 'B4']).rename('NDVI_Before')
@@ -125,6 +125,7 @@ ndvi_vis = {
 # 建立地圖顯示 NDVI 差異
 ndvi_map = geemap.Map()
 ndvi_map.centerObject(ndvi_diff.geometry(), 13)
+ndvi_map.add_colorbar(ndvi_vis, label=layer_name, layer_name=layer_name) #colorbar色棒
 ndvi_map.addLayer(ndvi_diff, ndvi_vis, 'NDVI 差異圖 (災後 - 災前)')
 
 # 顯示地圖
