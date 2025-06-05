@@ -237,18 +237,3 @@ def main():
         st.info("由於缺乏康芮颱風前後影像，無法顯示 NDVI 差異圖。")
 
     st.markdown("---") # 分隔線
-
-    # --- 崩塌範圍 SHP 圖層 ---
-    st.header("⛰️ 崩塌範圍圖層")
-    st.write("---")
-    collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip" # 修正後的連結範例
-    gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
-
-    collapse_map = geemap.Map()
-
-    if gdf_collapse110 is not None:
-        collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)')
-    else:
-        st.warning("未能載入崩塌資料，地圖上可能不會顯示。請檢查 SHP 檔案 URL 或內容。")
-    collapse_map.centerObject(default_roi, 12)
-    collapse_map.to_streamlit(height=600)
