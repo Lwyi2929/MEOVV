@@ -109,7 +109,7 @@ my_Map = geemap.Map()
 my_Map.centerObject(my_newimg_2024, 12)
 my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
 
-st.sidebar.header("📁 hotel_love(.zip)")
+st.sidebar.header("📁 hotel_C_f(.zip)")
 
 uploaded_zip = st.sidebar.file_uploader("上傳 Shapefile ZIP 檔", type=["zip"])
 
