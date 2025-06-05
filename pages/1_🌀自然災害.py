@@ -253,13 +253,8 @@ def main():
     collapse_map.centerObject(default_roi, 12) # 以預設 ROI 為中心
 
     if gdf_collapse110 is not None:
-        show_collapse_layer = st.checkbox("顯示崩塌範圍", True)
         collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)')
-        st.success("崩塌資料已載入並顯示。")
     else:
         st.warning("未能載入崩塌資料，地圖上可能不會顯示。請檢查 SHP 檔案 URL 或內容。")
 
     collapse_map.to_streamlit(height=600)
-
-if __name__ == "__main__":
-    main()
