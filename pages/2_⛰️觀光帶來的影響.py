@@ -101,7 +101,7 @@ my_newimgClassified2024 = my_newimg_2024.classify(my_trainedClassifier)
 
 # --- 地圖創建與圖層添加 ---
 my_Map = geemap.Map() # 創建 geemap 的地圖物件
-my_Map.centerObject(roi, 14) # 將地圖中心設置到 2024 影像上
+my_Map.centerObject(my_newimg_2024, 15) # 將地圖中心設置到 2024 影像上
 
 # 添加 Earth Engine 圖層 (geemap 的 addLayer 是 add_ee_layer 的別名)
 my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
