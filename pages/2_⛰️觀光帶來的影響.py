@@ -118,8 +118,7 @@ def load_and_process_hotel_shp(url):
     # 確保下載目錄存在（如果 Streamlit Cloud 清理 /tmp 以外的目錄）
     os.makedirs(extract_dir, exist_ok=True)
 
-    # 1. 下載 ZIP 文件
-    st.write(f"正在下載 {url}...")
+    # 下載 ZIP 文件
     try:
         r = requests.get(url, stream=True)
         r.raise_for_status() # 檢查 HTTP 請求是否成功
@@ -130,8 +129,7 @@ def load_and_process_hotel_shp(url):
         st.error(f"下載失敗: {e}")
         return None
 
-    # 2. 解壓縮 ZIP 文件
-    st.write(f"正在解壓縮 {zip_path} 到 {extract_dir}...")
+    # 解壓縮 ZIP 文件
     try:
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(extract_dir)
@@ -142,7 +140,7 @@ def load_and_process_hotel_shp(url):
         st.error(f"解壓縮失敗: {e}")
         return None
 
-    # 3. 尋找 .shp 文件
+    # 尋找 .shp 文件
     shp_file_path = None
     for root, _, files in os.walk(extract_dir):
         for file in files:
@@ -156,7 +154,7 @@ def load_and_process_hotel_shp(url):
         st.error("在解壓縮的資料夾中找不到 .shp 文件。")
         return None
 
-    # 4. 讀取 GeoDataFrame 並處理 CRS
+    # 讀取 GeoDataFrame 並處理 CRS
     try:
         gdf = gpd.read_file(shp_file_path)
         # CRS 轉換
@@ -178,7 +176,6 @@ if gdf_hotels is not None:
     # 使用 geemap 的 add_gdf 方法添加 GeoDataFrame
     # geemap 內部會處理 folium 的 GeoJson
     my_Map.add_gdf(gdf_hotels, layer_name='合法民宿')
-    st.write("合法民宿點位已添加到地圖。")
 else:
     st.warning("未能載入合法民宿點位，地圖上可能不會顯示。")
 
