@@ -55,21 +55,3 @@ left_layer = geemap.ee_tile_layer(my_newimg_Bef,vis_params, '卡努颱風前')
 right_layer = geemap.ee_tile_layer(my_newimg_Aft,vis_params, '卡努颱風後')
 my_Map.split_map(left_layer, right_layer)
 my_Map.to_streamlit(height=600)
---- NDVI 差異圖區塊 (卡努颱風) ---
-st.header("🌿 卡努颱風造成 NDVI 值變化差異圖")
-if my_newimg_Bef and my_newimg_Aft:
-    ndvi_bef = my_newimg_Bef.normalizedDifference(['B8', 'B4']).rename('NDVI_Before')
-    ndvi_aft = my_newimg_Aft.normalizedDifference(['B8', 'B4']).rename('NDVI_After')
-    ndvi_diff = ndvi_aft.subtract(ndvi_bef).rename('NDVI_Diff')
-
-    ndvi_vis = {
-        'min': -1,
-        'max': 1,
-        'palette': ['red', 'white', 'green'] # 紅色表示減少，綠色表示增加
-    }
-
-    ndvi_map = geemap.Map()
-    ndvi_map.centerObject(ndvi_diff.geometry(), 13)
-    ndvi_map.addLayer(ndvi_diff, ndvi_vis, 'NDVI 差異圖 (災後 - 災前)')
-    ndvi_map.add_colorbar(ndvi_vis, label="NDVI 差異", orientation="horizontal", layer_name='NDVI 差異')
-    ndvi_map.to_streamlit(height=600)
