@@ -27,12 +27,18 @@ def initialize_gee():
         st.stop() # 如果 GEE 無法初始化，則停止應用程式運行
 
 @st.cache_data
-def get_sentinel_image(point, roi, start_date, end_date):
+def get_sentinel_image(point_wkt, roi_wkt, start_date, end_date): # 參數名稱變更
     """
     獲取指定日期範圍內雲量最低的 Sentinel-2 影像。
     使用 st.cache_data 緩存 GEE 影像查詢結果。
+    現在接受 WKT 字符串作為 point 和 roi 的輸入。
     """
     try:
+        # 將 WKT 字符串轉換回 ee.Geometry 物件
+        point = ee.Feature(ee.Geometry.Point(point_wkt)).geometry()
+        roi = ee.Feature(ee.Geometry.Rectangle(roi_wkt)).geometry()
+
+
         image = (
             ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
             .filterBounds(point)
@@ -51,7 +57,7 @@ def get_sentinel_image(point, roi, start_date, end_date):
         st.error(f"獲取 Sentinel 影像失敗 ({start_date} - {end_date}): {e}")
         return None
 
-# --- 2. Shapefile 載入函式 ---
+# --- 2. Shapefile 載入函式 (保持不變) ---
 @st.cache_data(show_spinner="正在下載並處理崩塌資料...")
 def load_and_process_shp(url):
     """
@@ -110,7 +116,7 @@ def load_and_process_shp(url):
         st.error(f"讀取或處理 SHP 文件失敗: {e}")
         return None
 
-# --- 3. 地圖顯示函式 ---
+# --- 3. 地圖顯示函式 (保持不變) ---
 def display_split_map(map_object, left_ee_image, left_name, right_ee_image, right_name, vis_params):
     """
     顯示左右分開的地圖。
@@ -135,8 +141,14 @@ def main():
     initialize_gee()
 
     # 定義常用的 ROI 和中心點
-    default_roi = ee.Geometry.Rectangle([121.116451, 24.020390, 121.21, 24.09])
-    default_point = ee.Geometry.Point([121.1617, 24.0495])
+    # 將 ee.Geometry 物件的座標直接傳遞
+    default_roi_coords = [121.116451, 24.020390, 121.21, 24.09]
+    default_point_coords = [121.1617, 24.0495]
+
+    # 在這裡創建 GEE 幾何物件，僅用於地圖初始化和顯示
+    default_roi = ee.Geometry.Rectangle(default_roi_coords)
+    default_point = ee.Geometry.Point(default_point_coords)
+
     vis_params = {'min': 100, 'max': 3500, 'bands': ['B11', 'B8', 'B3']} # 假彩色紅外影像
 
     # --- 卡努颱風區塊 ---
@@ -146,9 +158,11 @@ def main():
 
     # 獲取卡努颱風前後影像
     with st.spinner("正在載入卡努颱風前影像..."):
-        kanu_img_bef = get_sentinel_image(default_point, default_roi, '2023-06-01', '2023-07-31')
+        # 調用時傳遞可哈希的座標列表
+        kanu_img_bef = get_sentinel_image(default_point_coords, default_roi_coords, '2023-06-01', '2023-07-31')
     with st.spinner("正在載入卡努颱風後影像..."):
-        kanu_img_aft = get_sentinel_image(default_point, default_roi, '2023-08-01', '2023-09-30')
+        # 調用時傳遞可哈希的座標列表
+        kanu_img_aft = get_sentinel_image(default_point_coords, default_roi_coords, '2023-08-01', '2023-09-30')
 
     kanu_map = geemap.Map()
     if kanu_img_bef:
@@ -169,9 +183,11 @@ def main():
 
     # 獲取康芮颱風前後影像
     with st.spinner("正在載入康芮颱風前影像..."):
-        kangrui_img_bef = get_sentinel_image(default_point, default_roi, '2024-09-01', '2024-10-29')
+        # 調用時傳遞可哈希的座標列表
+        kangrui_img_bef = get_sentinel_image(default_point_coords, default_roi_coords, '2024-09-01', '2024-10-29')
     with st.spinner("正在載入康芮颱風後影像..."):
-        kangrui_img_aft = get_sentinel_image(default_point, default_roi, '2024-10-30', '2024-12-30')
+        # 調用時傳遞可哈希的座標列表
+        kangrui_img_aft = get_sentinel_image(default_point_coords, default_roi_coords, '2024-10-30', '2024-12-30')
 
     kangrui_map = geemap.Map()
     if kangrui_img_bef:
