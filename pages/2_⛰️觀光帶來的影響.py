@@ -2,12 +2,6 @@ import streamlit as st
 import ee
 from google.oauth2 import service_account
 import geemap.foliumap as geemap
-#import leafmap.foliumap as leafmap
-# filename: app.py
-import zipfile
-import geopandas as gpd
-import os
-import tempfile
 
 st.title("⛰️ 清境農場歷年遊憩據點人次統計")
 st.subheader("""
@@ -112,42 +106,6 @@ my_newimgClassified2024 = my_newimg_2024.classify(my_trainedClassifier)
 my_Map = geemap.Map()
 my_Map.centerObject(my_newimg_2024, 12)
 my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
-
-st.sidebar.header("📁 hotel_C_f(.zip)")
-
-uploaded_zip = st.sidebar.file_uploader("上傳 Shapefile ZIP 檔", type=["zip"])
-
-if uploaded_zip:
-    # 建立暫存資料夾
-    with tempfile.TemporaryDirectory() as tmpdir:
-        zip_path = os.path.join(tmpdir, "shapefile.zip")
-        
-        # 儲存上傳的 zip 檔案
-        with open(zip_path, "wb") as f:
-            f.write(uploaded_zip.read())
-
-        # 解壓縮
-        with zipfile.ZipFile(zip_path, "r") as zip_ref:
-            zip_ref.extractall(tmpdir)
-
-        # 尋找 .shp 檔案
-        shp_files = [f for f in os.listdir(tmpdir) if f.endswith(".shp")]
-        if shp_files:
-            shp_path = os.path.join(tmpdir, shp_files[0])
-            gdf = gpd.read_file(shp_path)
-            st.success(f"✅ 成功載入 Shapefile：{shp_files[0]}")
-
-            # 顯示屬性表
-            st.dataframe(gdf.head())
-
-            # 顯示在地圖上
-            import folium
-            from streamlit_folium import st_folium
-            m = folium.Map(location=[gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()], zoom_start=13)
-            folium.GeoJson(gdf).add_to(m)
-            st_folium(m, height=500)
-        else:
-            st.error("❌ ZIP 壓縮檔中找不到 .shp 檔案")
 my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 
