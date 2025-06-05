@@ -180,28 +180,26 @@ st.write("""
 """)
 
 #環境變遷
-# 環境變遷圖表 with 中文支援
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as font_manager
 import numpy as np
 import os
-import requests
 
-# 字型下載路徑與設定
+# 安全的下載位置（GitHub 來源）
 font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/TraditionalChinese/NotoSansTC-Regular.otf"
 font_path = "NotoSansTC-Regular.otf"
 
-# 若本地無此字型則下載
 if not os.path.exists(font_path):
+    import requests
     r = requests.get(font_url)
     with open(font_path, 'wb') as f:
         f.write(r.content)
 
-# 設定字型
-font_prop = font_manager.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = font_prop.get_name()
+# 註冊字型
+font_manager.fontManager.addfont(font_path)
+plt.rcParams['font.family'] = 'Noto Sans TC'
 plt.rcParams['axes.unicode_minus'] = False
 
 # 顯示標題
@@ -225,13 +223,12 @@ bars1 = ax.bar(x - width, df['2016'], width, label='2016')
 bars2 = ax.bar(x, df['2018'], width, label='2018')
 bars3 = ax.bar(x + width, df['2024'], width, label='2024')
 
-# 設定標籤與字型
-ax.set_xlabel("土地分類", fontproperties=font_prop)
-ax.set_ylabel("面積（平方公里）", fontproperties=font_prop)
-ax.set_title("清境農場各年份土地使用分類", fontproperties=font_prop)
+ax.set_xlabel("土地分類")
+ax.set_ylabel("面積（平方公里）")
+ax.set_title("清境農場各年份土地使用分類")
 ax.set_xticks(x)
-ax.set_xticklabels(df['類別'], fontproperties=font_prop)
-ax.legend(title="年份", prop=font_prop)
+ax.set_xticklabels(df['類別'])
+ax.legend(title="年份")
 
 # 數值標註
 def add_labels(bars):
@@ -241,8 +238,7 @@ def add_labels(bars):
                     xy=(bar.get_x() + bar.get_width()/2, height),
                     xytext=(0, 3),
                     textcoords="offset points",
-                    ha='center', va='bottom',
-                    fontproperties=font_prop)
+                    ha='center', va='bottom')
 
 add_labels(bars1)
 add_labels(bars2)
