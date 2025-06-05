@@ -2,3 +2,4 @@ streamlit
 earthengine-api
 geemap
 google-auth
+geopandas
