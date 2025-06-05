@@ -10,10 +10,6 @@ import os
 # --- 1. GEE 初始化與工具函式 ---
 @st.cache_resource
 def initialize_gee():
-    """
-    使用 Streamlit Secrets 初始化 Earth Engine。
-    使用 st.cache_resource 確保只執行一次。
-    """
     try:
         service_account_info = st.secrets["GEE_SERVICE_ACCOUNT"]
         credentials = service_account.Credentials.from_service_account_info(
@@ -21,7 +17,6 @@ def initialize_gee():
             scopes=["https://www.googleapis.com/auth/earthengine"]
         )
         ee.Initialize(credentials)
-        st.success("Earth Engine 初始化成功！")
     except Exception as e:
         st.error(f"Earth Engine 初始化失敗：請檢查您的 GEE_SERVICE_ACCOUNT 設定。錯誤訊息: {e}")
         st.stop() # 如果 GEE 無法初始化，則停止應用程式運行
@@ -57,7 +52,7 @@ def get_sentinel_image(point_coords, roi_coords, start_date, end_date): # 參數
         return None
 
 # --- 2. Shapefile 載入函式 ---
-@st.cache_data(show_spinner="正在下載並處理崩塌資料...")
+@st.cache_data
 def load_and_process_shp(url):
     """
     下載、解壓縮並讀取 SHP 文件。
@@ -74,7 +69,6 @@ def load_and_process_shp(url):
             with open(zip_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
-        st.success(f"已成功下載 ZIP 文件到 {zip_path}")
     except requests.exceptions.RequestException as e:
         st.error(f"下載失敗: {e}")
         return None
@@ -82,7 +76,6 @@ def load_and_process_shp(url):
     try:
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(extract_dir)
-        st.success(f"已成功解壓縮到 {extract_dir}")
     except zipfile.BadZipFile:
         st.error(f"'{zip_path}' 不是一個有效的 ZIP 文件。")
         return None
@@ -242,14 +235,10 @@ def main():
     st.write("---")
     # 確保使用正確的原始檔案連結
     collapse110_zip_url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/474afe38979b8bf19bf640acce7289ad48d1f786/collapse110.zip"
-
     gdf_collapse110 = load_and_process_shp(collapse110_zip_url)
-
     collapse_map = geemap.Map()
-
     if gdf_collapse110 is not None:
         collapse_map.add_gdf(gdf_collapse110, layer_name='崩塌範圍 (110年)', zoom_to_layer=False)
-        st.success("崩塌資料已載入並顯示。")
     else:
         st.warning("未能載入崩塌資料，地圖上可能不會顯示。請檢查 SHP 檔案 URL 或內容。")
 
