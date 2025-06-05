@@ -3,6 +3,10 @@ import ee
 from google.oauth2 import service_account
 import geemap.foliumap as geemap
 
+import requests
+import zipfile
+import os
+
 st.title("⛰️ 清境農場歷年遊憩據點人次統計")
 st.subheader("""
 1985年，隸屬於退輔會的清境國民賓館落成，921地震後帶動了觀光業，清境的民宿從十家變一百多家，遊客量也大增，不少業者為了增加房間數，違法擴建。民宿爭奇鬥豔，違法亂象與坡地安全，造成非都市土地使用失控。
@@ -109,3 +113,30 @@ my_Map.addLayer(my_newimg_2024, vis_params, "Sentinel-2")
 my_Map.addLayer(my_newimgClassified2024, classVis, 'Classified_smileRandomForest')
 my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 my_Map.to_streamlit(height=600)
+
+
+
+
+# GitHub zip 檔案下載網址（點選「Download ZIP」後複製 URL）
+url = "https://raw.githubusercontent.com/Lwyi2929/MEOVV/refs/heads/main/hotel_love.zip"
+zip_path = "/tmp/hotel_love.zip"
+extract_dir = "/tmp/shp"
+
+# 下載 ZIP
+r = requests.get(url)
+with open(zip_path, "wb") as f:
+    f.write(r.content)
+
+# 解壓縮
+with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    zip_ref.extractall(extract_dir)
+
+# 尋找 .shp 路徑
+shp_files = [f for f in os.listdir(extract_dir) if f.endswith(".shp")]
+in_shp = os.path.join(extract_dir, shp_files[0])  # 假設只有一個 .shp
+
+my_Map.add_shp(in_shp, layer_name='hotel')
+my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
+my_Map.to_streamlit(height=600)
+
+
