@@ -2,6 +2,7 @@ import streamlit as st
 #import leafmap.foliumap as leafmap
 # filename: app.py
 import zipfile
+import geopandas as gpd
 import os
 import tempfile
 
