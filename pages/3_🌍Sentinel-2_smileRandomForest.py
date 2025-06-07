@@ -187,25 +187,27 @@ import matplotlib.font_manager as font_manager
 import numpy as np
 import os
 
-# 安全的下載位置（GitHub 來源）
+# 🌐 自動下載中文字型（如果尚未存在）
 font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/TraditionalChinese/NotoSansTC-Regular.otf"
 font_path = "NotoSansTC-Regular.otf"
 
 if not os.path.exists(font_path):
     import requests
+    st.info("正在下載中文字型...")
     r = requests.get(font_url)
     with open(font_path, 'wb') as f:
         f.write(r.content)
 
-# 註冊字型
-#font_manager.fontManager.addfont(font_path)
-#plt.rcParams['font.family'] = 'Noto Sans TC'
-#plt.rcParams['axes.unicode_minus'] = False
+# ✅ 註冊並啟用中文字型
+font_manager.fontManager.addfont(font_path)
+custom_font = font_manager.FontProperties(fname=font_path)
+plt.rcParams['font.family'] = custom_font.get_name()
+plt.rcParams['axes.unicode_minus'] = False  # 避免負號亂碼
 
-# 顯示標題
+# ✅ Streamlit 頁面標題
 st.title("🌍 環境變遷分析：土地使用變化")
 
-# 建立資料
+# 📊 模擬資料
 data = {
     '類別': ['10 樹林', '30 草地', '40 農地', '50 建築', '80 水域'],
     '2016': [60.22, 11.43, 0.85, 0.66, 0.19],
@@ -214,7 +216,7 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# 畫圖
+# 🎨 繪圖
 fig, ax = plt.subplots(figsize=(10, 6))
 x = np.arange(len(df['類別']))
 width = 0.25
@@ -223,12 +225,13 @@ bars1 = ax.bar(x - width, df['2016'], width, label='2016')
 bars2 = ax.bar(x, df['2018'], width, label='2018')
 bars3 = ax.bar(x + width, df['2024'], width, label='2024')
 
-ax.set_xlabel("土地分類")
-ax.set_ylabel("面積（平方公里）")
-ax.set_title("清境農場各年份土地使用分類")
+# 中文標籤套用字型
+ax.set_xlabel("土地分類", fontproperties=custom_font)
+ax.set_ylabel("面積（平方公里）", fontproperties=custom_font)
+ax.set_title("清境農場各年份土地使用分類", fontproperties=custom_font)
 ax.set_xticks(x)
-ax.set_xticklabels(df['類別'])
-ax.legend(title="年份")
+ax.set_xticklabels(df['類別'], fontproperties=custom_font)
+ax.legend(title="年份", prop=custom_font, title_fontproperties=custom_font)
 
 # 數值標註
 def add_labels(bars):
@@ -238,13 +241,15 @@ def add_labels(bars):
                     xy=(bar.get_x() + bar.get_width()/2, height),
                     xytext=(0, 3),
                     textcoords="offset points",
-                    ha='center', va='bottom')
+                    ha='center', va='bottom',
+                    fontproperties=custom_font)
 
 add_labels(bars1)
 add_labels(bars2)
 add_labels(bars3)
 
 plt.tight_layout()
-st.pyplot(fig)
 
+# 📌 顯示圖表
+st.pyplot(fig)
 
