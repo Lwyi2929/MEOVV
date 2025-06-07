@@ -188,25 +188,11 @@ import matplotlib.font_manager as font_manager
 import numpy as np
 import os
 
-# 安全的下載位置（GitHub 來源）
-font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/TraditionalChinese/NotoSansTC-Regular.otf"
-font_path = "NotoSansTC-Regular.otf"
 
-if not os.path.exists(font_path):
-    import requests
-    r = requests.get(font_url)
-    with open(font_path, 'wb') as f:
-        f.write(r.content)
-
-# 註冊字型
-#font_manager.fontManager.addfont(font_path)
-#plt.rcParams['font.family'] = 'Noto Sans TC'
-#plt.rcParams['axes.unicode_minus'] = False
-
-# 顯示標題
+# 標題
 st.title("🌍 環境變遷分析：土地使用變化")
 
-# 建立資料
+# 資料建立
 data = {
     '類別': ['10 Trees', '30 Grassland', '40 Cropland', '50 Built-up', '80 Open water'],
     '2016': [60.22, 11.43, 0.85, 0.66, 0.19],
@@ -217,7 +203,7 @@ df = pd.DataFrame(data)
 
 # 畫圖
 fig, ax = plt.subplots(figsize=(10, 6))
-x = np.arange(len(df['Category']))
+x = np.arange(len(df['類別']))
 width = 0.25
 
 bars1 = ax.bar(x - width, df['2016'], width, label='2016')
@@ -226,17 +212,16 @@ bars3 = ax.bar(x + width, df['2024'], width, label='2024')
 
 ax.set_xlabel("Land classification")
 ax.set_ylabel("Area (square kilometers)")
-#ax.set_title("清境農場各年份土地使用分類")
 ax.set_xticks(x)
-ax.set_xticklabels(df['Category'])
-ax.legend(title="year")
+ax.set_xticklabels(df['類別'])
+ax.legend(title="Year")
 
 # 數值標註
 def add_labels(bars):
     for bar in bars:
         height = bar.get_height()
         ax.annotate(f'{height:.2f}',
-                    xy=(bar.get_x() + bar.get_width()/2, height),
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
                     xytext=(0, 3),
                     textcoords="offset points",
                     ha='center', va='bottom')
@@ -248,6 +233,6 @@ add_labels(bars3)
 plt.tight_layout()
 st.pyplot(fig)
 
-# 🔍 顯示資料表供檢查
+# 顯示原始資料表
 with st.expander("📋 顯示原始資料表"):
-    st.dataframe(fig)
+    st.dataframe(df)
