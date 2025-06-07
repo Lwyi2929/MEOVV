@@ -179,32 +179,75 @@ st.write("""
 
 """)
 
+
 #環境變遷
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
+import numpy as np
+import os
 
-# 🌍 頁面標題
+# 安全的下載位置（GitHub 來源）
+font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/TraditionalChinese/NotoSansTC-Regular.otf"
+font_path = "NotoSansTC-Regular.otf"
+
+if not os.path.exists(font_path):
+    import requests
+    r = requests.get(font_url)
+    with open(font_path, 'wb') as f:
+        f.write(r.content)
+
+# 註冊字型
+#font_manager.fontManager.addfont(font_path)
+#plt.rcParams['font.family'] = 'Noto Sans TC'
+#plt.rcParams['axes.unicode_minus'] = False
+
+# 顯示標題
 st.title("🌍 環境變遷分析：土地使用變化")
 
-# 📊 原始資料
+# 建立資料
 data = {
-    '類別': ['10 樹林', '30 草地', '40 農地', '50 建築', '80 水域'],
+    '類別': ['10 Trees', '30 Grassland', '40 Cropland', '50 Built-up', '80 Open water'],
     '2016': [60.22, 11.43, 0.85, 0.66, 0.19],
     '2018': [58.88, 12.86, 0.91, 0.53, 0.18],
     '2024': [51.40, 16.12, 3.93, 1.55, 0.35]
 }
 df = pd.DataFrame(data)
 
-# 🔄 將寬表轉為長表，方便使用 st.bar_chart()
-df_long = df.melt(id_vars='類別', var_name='年份', value_name='面積平方公里')
+# 畫圖
+fig, ax = plt.subplots(figsize=(10, 6))
+x = np.arange(len(df['Category']))
+width = 0.25
 
-# 🧊 製作圖表：使用寬表 pivot 成適合 st.bar_chart 格式
-df_chart = df_long.pivot(index='類別', columns='年份', values='面積平方公里')
+bars1 = ax.bar(x - width, df['2016'], width, label='2016')
+bars2 = ax.bar(x, df['2018'], width, label='2018')
+bars3 = ax.bar(x + width, df['2024'], width, label='2024')
 
-# ✅ 顯示條形圖
-st.subheader("清境農場各年份土地使用變化")
-st.bar_chart(df_chart)
+ax.set_xlabel("Land classification")
+ax.set_ylabel("Area (square kilometers)")
+#ax.set_title("清境農場各年份土地使用分類")
+ax.set_xticks(x)
+ax.set_xticklabels(df['Category'])
+ax.legend(title="year")
+
+# 數值標註
+def add_labels(bars):
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate(f'{height:.2f}',
+                    xy=(bar.get_x() + bar.get_width()/2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+
+add_labels(bars1)
+add_labels(bars2)
+add_labels(bars3)
+
+plt.tight_layout()
+st.pyplot(fig)
 
 # 🔍 顯示資料表供檢查
 with st.expander("📋 顯示原始資料表"):
-    st.dataframe(df_chart)
+    st.dataframe(fig)
