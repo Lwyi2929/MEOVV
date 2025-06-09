@@ -30,7 +30,7 @@ credentials = service_account.Credentials.from_service_account_info(
 # 初始化 Earth Engine
 ee.Initialize(credentials)
 
-st.title("合法民宿點位")
+st.title("民宿點位")
 
 # 定義研究區域
 roi = ee.Geometry.Rectangle([121.116451, 24.020390, 121.21, 24.09])
@@ -184,3 +184,6 @@ my_Map.add_legend(title='ESA Land Cover Type', builtin_legend='ESA_WorldCover')
 
 # 顯示地圖
 my_Map.to_streamlit(height=600)
+st.write("""
+資料來源:政府開放資料平台
+""")
